@@ -2,9 +2,9 @@ vCard - Personal Portfolio
 
 # sidebar
 
-alt = Richard hanrick
-Richard hanrick
-Web developer
+alt = Amy Garcia
+Amy Garcia
+IT Project Manager 
 
 Show Contacts
 
@@ -32,9 +32,9 @@ Contact
 
 About me
 
-I'm Creative Director and UI/UX Designer from Sydney, Australia, working in web development and print media. I enjoy turning complex problems into simple, beautiful and intuitive designs.
+I am a results-oriented individual with a passion for learning and creating strategic visions to manage innovative IT solutions that meet customer needs. Excellent at planning, scoping, strategizing, and managing software development programs and products. 
 
-My job is to build your website so that it is functional and user-friendly but at the same time attractive. Moreover, I add personal touch to your product and make sure that is eye-catching and easy to use. My aim is to bring across your message and identity in the most creative way. I created web design for many famous brand companies.
+I'm a certified Scum Master ensuring our IT division follows agile best practices. I am excellent at Incorporating complex, technical data into engaging presentations for business audiences. I excel at prioritization, time management, organization, working autonomously, collaborating, communicating and maintaining stakeholder confidence
 
 
 ## service
