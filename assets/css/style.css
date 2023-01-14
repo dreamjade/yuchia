@@ -1121,7 +1121,7 @@ main {
 /*-----------------------------------*\
   #CONTACT
 \*-----------------------------------*/
-
+/*
 .mapbox {
   position: relative;
   height: 250px;
@@ -1140,7 +1140,7 @@ main {
   border: none;
   filter: grayscale(1) invert(1);
 }
-
+*/
 .contact-form { margin-bottom: 10px; }
 
 .form-title { margin-bottom: 20px; }
