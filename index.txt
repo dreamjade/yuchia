@@ -9,16 +9,16 @@ IT Project Manager
 Show Contacts
 
 Email
-richard@example.com
+amy.garcia579@icloud.com
 
-Phone
-+1 (213) 352-2795
+LinkedIn
+https://www.linkedin.com/in/amy-garcia-7028301a1/
 
-Birthday
-June 23, 1982
+GitHub
+https://github.com/zalf14
 
 Location
-Sacramento, California, USA
+Knoxville, TN, USA
 
 # navbar
 
@@ -56,27 +56,6 @@ Professional development of applications for iOS and Android.
 alt = camera icon
 Photography
 I make high-quality photos of any category at a professional level.
-
-
-## testimonials
-
-Testimonials
-
-alt = Daniel lewis
-Daniel lewis
-Richard was hired to create a corporate identity. We were very pleased with the work done. She has a lot of experience and is very concerned about the needs of client. Lorem ipsum dolor sit amet, ullamcous cididt consectetur adipiscing elit, seds do et eiusmod tempor incididunt ut laborels dolore magnarels alia.
-
-alt = Jessica miller
-Jessica miller
-Richard was hired to create a corporate identity. We were very pleased with the work done. She has a lot of experience and is very concerned about the needs of client. Lorem ipsum dolor sit amet, ullamcous cididt consectetur adipiscing elit, seds do et eiusmod tempor incididunt ut laborels dolore magnarels alia.
-
-alt = Emily evans
-Emily evans
-Richard was hired to create a corporate identity. We were very pleased with the work done. She has a lot of experience and is very concerned about the needs of client. Lorem ipsum dolor sit amet, ullamcous cididt consectetur adipiscing elit, seds do et eiusmod tempor incididunt ut laborels dolore magnarels alia.
-
-alt = Henry william
-Henry william
-Richard was hired to create a corporate identity. We were very pleased with the work done. She has a lot of experience and is very concerned about the needs of client. Lorem ipsum dolor sit amet, ullamcous cididt consectetur adipiscing elit, seds do et eiusmod tempor incididunt ut laborels dolore magnarels alia.
 
 
 ## clients
