@@ -560,7 +560,7 @@ main {
  * #testimonials 
  */
 
-.testimonials { margin-bottom: 30px; }
+/*.testimonials { margin-bottom: 30px; }
 
 .testimonials-title { margin-bottom: 20px; }
 
@@ -611,7 +611,7 @@ main {
 /**
  * #testimonials-modal
  */
-
+/*
 .modal-container {
   position: fixed;
   top: 0;
@@ -720,7 +720,7 @@ main {
   font-weight: var(--fw-300);
   line-height: 1.6;
 }
-
+*/
 
 /**
  * #clients 
