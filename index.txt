@@ -2,8 +2,8 @@ vCard - Personal Portfolio
 
 # sidebar
 
-alt = Amy Garcia
-Amy Garcia
+alt = Lin, Yu-Chia
+Lin, Yu-Chia
 IT Project Manager 
 
 Show Contacts
