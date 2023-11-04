@@ -11,14 +11,14 @@ Show Contacts
 Email
 amy.garcia579@icloud.com
 
-LinkedIn
-https://www.linkedin.com/in/amy-garcia-7028301a1/
+Google Scholar
+https://scholar.google.com/citations?user=uLe1uIsAAAAJ&hl=zh-TW
 
 GitHub
 https://github.com/dreamjade
 
-Location
-Knoxville, TN, USA
+Institution
+University of Arizona, Tucson, AZ, United States
 
 # navbar
 
