@@ -12,13 +12,13 @@ Email
 amy.garcia579@icloud.com
 
 Google Scholar
-https://scholar.google.com/citations?user=uLe1uIsAAAAJ&hl
+https://scholar.google.com/citations?user=uLe1uIsAAAAJ
 
 GitHub
 https://github.com/dreamjade
 
 Institution
-University of Arizona, Tucson, AZ, United States
+University of Arizona, AZ, United States
 
 # navbar
 
