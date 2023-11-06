@@ -32,10 +32,8 @@ Contact
 
 About me
 
-I am a results-oriented individual with a passion for learning and creating strategic visions to manage innovative IT solutions that meet customer needs. Excellent at planning, scoping, strategizing, and managing software development programs and products. 
-
-I'm a certified Scum Master ensuring our IT division follows agile best practices. I am excellent at Incorporating complex, technical data into engaging presentations for business audiences. I excel at prioritization, time management, organization, working autonomously, collaborating, communicating and maintaining stakeholder confidence
-
+I am a Ph.D. candidate at the University of Arizona, working with Professor Ewan Douglas. With a passion for learning and crafting visionary perspectives, my academic journey spans multiple degrees, including a Master's from The University of New Mexico in Physics with a concentration on Astrophysics and double Bachelor's degrees in Electrical Engineering and Physics from National Taiwan University. 
+I have contributed to publications in esteemed journals and invited talks, exploring diverse topics such as planetary system formations around M dwarfs, collision-induced instability phenomena in dense neutrino scenarios, and the exozodi effect on direct imaging. Alongside my research roles as a Graduate Student Research Assistant, I've shared my findings at significant events like the Emerging Researchers in Exoplanet Science Symposium and Sagan Workshop. Awards like the University of Arizona William S. Bickel Graduate Fellowship and the Graduate College Fellowship reflect my dedication to advancing astrophysics and unveiling the mysteries of the cosmos through academic rigor and unwavering curiosity.
 
 ## service
 
