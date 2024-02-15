@@ -158,6 +158,15 @@ for (let i = 0; i < navigationLinks.length; i++) {
   });
 }
 
+// Check page url hash to show initial page
+let hash = window.location.hash.substr(1);
+for (let i = 0; i < pages.length; i++) {
+  if (hash === pages[i].dataset.page) {
+    pages[i].classList.add("active");
+    navigationLinks[i].classList.add("active");
+  }
+}
+
 // page navigate with url hash
 window.addEventListener("hashchange", function () {
   let hash = window.location.hash.substr(1);
