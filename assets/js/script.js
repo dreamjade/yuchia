@@ -176,9 +176,13 @@ window.addEventListener("hashchange", function () {
   }
 });
 
-// Check initial hash tag on page load
+// Check initial hash tag on page load if hash tag not found then show about page and update hash tag in url
 window.addEventListener("DOMContentLoaded", function () {
   let hash = window.location.hash.substr(1);
+  if (hash === "") {
+    hash = "about";
+    window.location.hash = hash;
+  }
   for (let i = 0; i < pages.length; i++) {
     if (hash === pages[i].dataset.page) {
       pages[i].classList.add("active");
