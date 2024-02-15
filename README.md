@@ -1,3 +1,3 @@
-# YuChia - Personal portfolio
+# YuChia - Personal Website
 
-Yu-Chia's portfolio website using a template forked from codewithsadee/vcard-personal-portfolio
+Yu-Chia's website using a template forked from codewithsadee/vcard-personal-portfolio
