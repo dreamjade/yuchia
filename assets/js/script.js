@@ -140,7 +140,7 @@ for (let i = 0; i < formInputs.length; i++) {
 const navigationLinks = document.querySelectorAll("[data-nav-link]");
 const pages = document.querySelectorAll("[data-page]");
 
-// add event to all nav link
+// add event to all nav link and add hash tag to url
 for (let i = 0; i < navigationLinks.length; i++) {
   navigationLinks[i].addEventListener("click", function () {
 
@@ -149,6 +149,7 @@ for (let i = 0; i < navigationLinks.length; i++) {
         pages[i].classList.add("active");
         navigationLinks[i].classList.add("active");
         window.scrollTo(0, 0);
+        window.location.hash = pages[i].dataset.page;
       } else {
         pages[i].classList.remove("active");
         navigationLinks[i].classList.remove("active");
@@ -157,7 +158,6 @@ for (let i = 0; i < navigationLinks.length; i++) {
 
   });
 }
-
 // page navigate with url hash
 window.addEventListener("hashchange", function () {
   let hash = window.location.hash.substr(1);
