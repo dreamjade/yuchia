@@ -159,35 +159,29 @@ for (let i = 0; i < navigationLinks.length; i++) {
 }
 
 // page navigate with url hash
-function checkInitialHash() {
-  let hash = window.location.hash.substr(1);
-  if (hash) {
-    for (let i = 0; i < pages.length; i++) {
-      if (hash === pages[i].dataset.page) {
-        pages[i].classList.add("active");
-        navigationLinks[i].classList.add("active");
-        // Optionally, adjust scroll position (e.g., window.scrollTo(0, pages[i].offsetTop))
-        break; // exit loop after finding the match
-      }
-    }
-  }
-}
-
-// listen for hashchange events
-checkInitialHash();
-
-// Add event listener to handle hashchange events
 window.addEventListener("hashchange", function () {
   let hash = window.location.hash.substr(1);
-  // Check if the new hash is different from the previously active page
-  if (hash && hash !== document.querySelector("[data-page].active").dataset.page) {
-    for (let i = 0; i < pages.length; i++) {
-      // ... existing code with the following modification:
-      pages[i].classList.remove("active"); // Remove all "active" classes before check
-      if (hash === pages[i].dataset.page) {
-        pages[i].classList.add("active");
-        navigationLinks[i].classList.add("active");
-      }
+  for (let i = 0; i < pages.length; i++) {
+    if (hash === pages[i].dataset.page) {
+      pages[i].classList.add("active");
+      navigationLinks[i].classList.add("active");
+    } else {
+      pages[i].classList.remove("active");
+      navigationLinks[i].classList.remove("active");
+    }
+  }
+});
+
+// Check initial hash tag on page load
+window.addEventListener("load", function () {
+  let hash = window.location.hash.substr(1);
+  for (let i = 0; i < pages.length; i++) {
+    if (hash === pages[i].dataset.page) {
+      pages[i].classList.add("active");
+      navigationLinks[i].classList.add("active");
+    } else {
+      pages[i].classList.remove("active");
+      navigationLinks[i].classList.remove("active");
     }
   }
 });
