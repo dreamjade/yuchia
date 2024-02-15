@@ -173,7 +173,7 @@ window.addEventListener("hashchange", function () {
 });
 
 // Check initial hash tag on page load
-window.addEventListener("load", function () {
+window.addEventListener("DOMContentLoaded", function () {
   let hash = window.location.hash.substr(1);
   for (let i = 0; i < pages.length; i++) {
     if (hash === pages[i].dataset.page) {
