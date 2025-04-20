@@ -122,47 +122,29 @@ if (form && formInputs.length > 0 && formBtn) { // Add checks
 */
 
 
-// --- CORRECTED PAGE NAVIGATION LOGIC ---
+// --- PAGE NAVIGATION LOGIC (Corrected) ---
 
-// page navigation variables
 const navigationLinks = document.querySelectorAll("[data-nav-link]");
 const pages = document.querySelectorAll("[data-page]");
+const validPageNames = Array.from(pages).map(p => p.dataset.page); // Get valid page names once
 
 // Function to set the active page and navigation link
 const setActivePage = function (pageName) {
-  let pageFound = false;
+  let targetPageName = pageName; // Use a temporary variable
+
+  // Default to 'about' if the requested pageName is invalid
+  if (!validPageNames.includes(targetPageName)) {
+    targetPageName = "about"; // Default page name
+  }
+
   // Activate the correct page
   for (let i = 0; i < pages.length; i++) {
-    if (pages[i].dataset.page === pageName) {
-      pages[i].classList.add("active");
-      pageFound = true; // Mark that we found a valid page
-    } else {
-      pages[i].classList.remove("active");
-    }
+    pages[i].classList.toggle("active", pages[i].dataset.page === targetPageName);
   }
 
-  // If the requested pageName wasn't found, default to 'about'
-  if (!pageFound && pages.length > 0) {
-    pageName = "about"; // Default page name
-    for (let i = 0; i < pages.length; i++) {
-      if (pages[i].dataset.page === pageName) {
-        pages[i].classList.add("active");
-        break; // Found the default page
-      }
-    }
-    // Optionally update hash if it was invalid
-    // Be careful with history.replaceState to avoid unwanted back button behavior
-    // window.location.hash = pageName; // This might trigger hashchange again
-  }
-
-
-  // Activate the correct navigation link based on the potentially updated pageName
+  // Activate the correct navigation link
   for (let i = 0; i < navigationLinks.length; i++) {
-    if (navigationLinks[i].innerHTML.toLowerCase() === pageName) {
-      navigationLinks[i].classList.add("active");
-    } else {
-      navigationLinks[i].classList.remove("active");
-    }
+    navigationLinks[i].classList.toggle("active", navigationLinks[i].innerHTML.toLowerCase() === targetPageName);
   }
 
   window.scrollTo(0, 0);
@@ -172,30 +154,79 @@ const setActivePage = function (pageName) {
 for (let i = 0; i < navigationLinks.length; i++) {
   navigationLinks[i].addEventListener("click", function () {
     const targetPage = this.innerHTML.toLowerCase();
-    // Update URL hash (this might trigger hashchange listener below,
-    // but we also call setActivePage directly for immediate feedback)
-    window.location.hash = targetPage;
-    setActivePage(targetPage);
+    if (window.location.hash !== `#${targetPage}`) {
+      window.location.hash = targetPage; // Update hash only if it's different
+    } else {
+      setActivePage(targetPage); // Manually update if hash is already correct (e.g., clicking current page)
+    }
   });
 }
 
 // Function to handle hash changes (URL fragment identifier changes)
 const handleHashChange = function () {
-  let pageName = window.location.hash.substring(1); // Use substring(1) - handles empty hash correctly
-
-  // Default to 'about' if hash is empty
-  if (!pageName && pages.length > 0) {
-    pageName = "about";
-    // Optionally update hash if it was empty - be careful about triggering listener again
-    // window.location.hash = pageName;
-  }
-
-  // Set the active page based on the determined pageName
-  setActivePage(pageName);
+  let pageName = window.location.hash.substring(1); // Use substring(1)
+  setActivePage(pageName); // Let setActivePage handle defaulting
 };
 
 // Listen for hash changes (e.g., back/forward button, manual URL change)
 window.addEventListener("hashchange", handleHashChange);
 
 // Set initial page based on hash when the page loads
-window.addEventListener("DOMContentLoaded", handleHashChange);
+window.addEventListener("DOMContentLoaded", () => {
+  // Run filter function for 'all' initially if filter items exist
+  if (filterItems.length > 0) {
+    filterFunc("all");
+    if (lastClickedBtn) {
+      lastClickedBtn.classList.add("active"); // Ensure 'All' button is active initially
+    }
+  }
+  handleHashChange(); // Then handle page navigation based on hash
+});
+
+// --- END OF PAGE NAVIGATION LOGIC ---
+
+
+// --- LIGHT/DARK THEME TOGGLE ---
+
+const themeToggleButton = document.getElementById('theme-toggle-btn');
+const bodyElement = document.body;
+
+// Function to apply the theme based on saved preference or system setting
+const applyThemePreference = () => {
+  // 1. Check localStorage
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme) {
+    bodyElement.classList.toggle('light-theme', savedTheme === 'light');
+    return; // Exit if we found a saved theme
+  }
+
+  // 2. Check prefers-color-scheme media query (Optional Fallback)
+  // const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  // bodyElement.classList.toggle('light-theme', !prefersDark); // Add light-theme if system is NOT dark
+};
+
+// Function to handle the toggle button click
+const handleThemeToggle = () => {
+  bodyElement.classList.toggle('light-theme');
+
+  // Save the user's preference to localStorage
+  if (bodyElement.classList.contains('light-theme')) {
+    localStorage.setItem('theme', 'light');
+    // Optional: Update button icon/text for light mode (e.g., to a moon)
+    // if (themeToggleButton) themeToggleButton.querySelector('ion-icon').name = 'moon-outline';
+  } else {
+    localStorage.setItem('theme', 'dark');
+    // Optional: Update button icon/text for dark mode (e.g., back to contrast or a sun)
+    // if (themeToggleButton) themeToggleButton.querySelector('ion-icon').name = 'contrast-outline';
+  }
+};
+
+// Add event listener to the button
+if (themeToggleButton) { // Check if the button exists
+  themeToggleButton.addEventListener('click', handleThemeToggle);
+}
+
+// Apply the theme preference early
+applyThemePreference();
+
+// --- END OF LIGHT/DARK THEME TOGGLE ---
