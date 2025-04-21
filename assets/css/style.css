@@ -100,9 +100,9 @@
 
   --light-bg: hsl(0, 0%, 100%);
   /* White background */
-  --light-surface: hsl(45, 87%, 95%);
+  --light-surface: hsl(45, 100%, 96%);
   /* Slightly off-white for cards/sidebar */
-  --light-surface-alt: hsl(0, 0%, 95%);
+  --light-surface-alt: hsl(29, 10%, 95%);
   /* Alternative surface */
   --light-border: hsl(0, 0%, 88%);
   /* Light gray border */
@@ -112,7 +112,7 @@
   /* Lighter gray text */
   --light-accent: hsl(45, 100%, 35%);
   /* A potentially brighter/different yellow */
-  --light-accent-alt: hsl(45, 80%, 65%);
+  --light-accent-alt: hsl(45, 60%, 35%);
   /* Lighter accent */
   --light-shadow: 0 4px 15px hsla(0, 0%, 0%, 0.1);
   /* Softer shadow */
