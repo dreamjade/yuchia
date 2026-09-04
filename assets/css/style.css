@@ -508,6 +508,10 @@ main {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
+.light-theme .navbar-link:hover {
+  color: var(--white-1);
+}
+
 .navbar-list {
   display: flex;
   flex-wrap: wrap;
