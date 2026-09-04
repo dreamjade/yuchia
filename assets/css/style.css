@@ -1,49 +1,22 @@
 /*-----------------------------------*\
-  #style.css
-\*-----------------------------------*/
-
-
-/**
- * copyright 2022 @codewithsadee
- */
-
-
-
-
-
-/*-----------------------------------*\
-  #CUSTOM PROPERTY
+  #CUSTOM PROPERTIES
 \*-----------------------------------*/
 
 :root {
 
   /**
-   * colors
+   * Colors (Dark Theme - Default)
    */
 
-  /* gradient */
+  /* Gradients */
+  --bg-gradient-onyx: linear-gradient(to bottom right, hsl(240, 1%, 25%) 3%, hsl(0, 0%, 19%) 97%);
+  --bg-gradient-jet: linear-gradient(to bottom right, hsla(240, 1%, 18%, 0.251) 0%, hsla(240, 2%, 11%, 0) 100%), hsl(240, 2%, 13%);
+  --bg-gradient-yellow-1: linear-gradient(to bottom right, hsl(45, 100%, 71%) 0%, hsla(36, 100%, 69%, 0) 50%);
+  --bg-gradient-yellow-2: linear-gradient(135deg, hsla(45, 100%, 71%, 0.251) 0%, hsla(35, 100%, 68%, 0) 59.86%), hsl(240, 2%, 13%);
+  --border-gradient-onyx: linear-gradient(to bottom right, hsl(0, 0%, 25%) 0%, hsla(0, 0%, 25%, 0) 50%);
+  --text-gradient-yellow: linear-gradient(to right, hsl(45, 100%, 72%), hsl(35, 100%, 68%));
 
-  --bg-gradient-onyx: linear-gradient(to bottom right,
-      hsl(240, 1%, 25%) 3%,
-      hsl(0, 0%, 19%) 97%);
-  --bg-gradient-jet: linear-gradient(to bottom right,
-      hsla(240, 1%, 18%, 0.251) 0%,
-      hsla(240, 2%, 11%, 0) 100%), hsl(240, 2%, 13%);
-  --bg-gradient-yellow-1: linear-gradient(to bottom right,
-      hsl(45, 100%, 71%) 0%,
-      hsla(36, 100%, 69%, 0) 50%);
-  --bg-gradient-yellow-2: linear-gradient(135deg,
-      hsla(45, 100%, 71%, 0.251) 0%,
-      hsla(35, 100%, 68%, 0) 59.86%), hsl(240, 2%, 13%);
-  --border-gradient-onyx: linear-gradient(to bottom right,
-      hsl(0, 0%, 25%) 0%,
-      hsla(0, 0%, 25%, 0) 50%);
-  --text-gradient-yellow: linear-gradient(to right,
-      hsl(45, 100%, 72%),
-      hsl(35, 100%, 68%));
-
-  /* solid */
-
+  /* Solid Colors */
   --jet: hsl(0, 0%, 22%);
   --onyx: hsl(240, 1%, 17%);
   --eerie-black-1: hsl(240, 2%, 13%);
@@ -55,16 +28,12 @@
   --vegas-gold: hsl(45, 54%, 58%);
   --light-gray: hsl(0, 0%, 84%);
   --light-gray-70: hsla(0, 0%, 84%, 0.7);
-  --bittersweet-shimmer: hsl(0, 43%, 51%);
 
   /**
-   * typography
+   * Typography
    */
-
-  /* font-family */
   --ff-poppins: 'Poppins', sans-serif;
 
-  /* font-size */
   --fs-1: 24px;
   --fs-2: 18px;
   --fs-3: 17px;
@@ -74,16 +43,14 @@
   --fs-7: 13px;
   --fs-8: 11px;
 
-  /* font-weight */
   --fw-300: 300;
   --fw-400: 400;
   --fw-500: 500;
   --fw-600: 600;
 
   /**
-   * shadow
+   * Shadows
    */
-
   --shadow-1: -4px 8px 24px hsla(0, 0%, 0%, 0.25);
   --shadow-2: 0 16px 30px hsla(0, 0%, 0%, 0.25);
   --shadow-3: 0 16px 40px hsla(0, 0%, 0%, 0.25);
@@ -91,43 +58,43 @@
   --shadow-5: 0 24px 80px hsla(0, 0%, 0%, 0.25);
 
   /**
-   * transition
+   * Transitions
    */
-
   --transition-1: 0.15s ease;
   --transition-2: 0.3s ease-in-out;
   --transition-theme: 0.2s ease;
-
-  --light-bg: hsl(0, 0%, 100%);
-  /* White background */
-  --light-surface: hsl(45, 100%, 96%);
-  /* Slightly off-white for cards/sidebar */
-  --light-surface-alt: hsl(29, 10%, 95%);
-  /* Alternative surface */
-  --light-border: hsl(0, 0%, 88%);
-  /* Light gray border */
-  --light-text-primary: hsl(0, 0%, 15%);
-  /* Dark gray text */
-  --light-text-secondary: hsl(0, 0%, 40%);
-  /* Lighter gray text */
-  --light-accent: hsl(45, 100%, 35%);
-  /* A potentially brighter/different yellow */
-  --light-accent-alt: hsl(45, 60%, 35%);
-  /* Lighter accent */
-  --light-shadow: 0 4px 15px hsla(0, 0%, 0%, 0.1);
-  /* Softer shadow */
-  --light-shadow-heavy: 0 8px 25px hsla(0, 0%, 0%, 0.15);
-
-  /* Light gradients (adjust as needed) */
-  --light-bg-gradient-1: linear-gradient(to bottom right, hsl(0, 0%, 95%) 0%, hsl(0, 0%, 100%) 100%);
-  --light-bg-gradient-2: linear-gradient(to bottom right, hsla(0, 0%, 90%, 0.2) 0%, hsla(0, 0%, 90%, 0) 100%), hsl(0, 0%, 98%);
-  --light-border-gradient: linear-gradient(to bottom right, hsl(0, 0%, 90%) 0%, hsla(0, 0%, 90%, 0) 50%);
-  --light-text-gradient-yellow: linear-gradient(to right, hsl(45, 90%, 55%), hsl(35, 90%, 50%));
 }
 
+/* Light Theme Variables */
+body.light-theme,
+html.light-theme {
+  --smoky-black: hsl(0, 0%, 98%);
+  --eerie-black-1: hsl(0, 0%, 94%);
+  --eerie-black-2: hsl(0, 0%, 100%);
+  --onyx: hsl(0, 0%, 90%);
+  --jet: hsl(0, 0%, 88%);
 
+  --white-1: hsl(0, 0%, 15%);
+  --white-2: hsl(0, 0%, 10%);
+  --light-gray: hsl(0, 0%, 38%);
+  --light-gray-70: hsla(0, 0%, 38%, 0.75);
 
+  --orange-yellow-crayola: hsl(38, 95%, 42%);
+  --vegas-gold: hsl(38, 70%, 42%);
 
+  --bg-gradient-onyx: linear-gradient(to bottom right, hsl(0, 0%, 92%) 0%, hsl(0, 0%, 98%) 100%);
+  --bg-gradient-jet: linear-gradient(to bottom right, hsla(0, 0%, 90%, 0.4) 0%, hsla(0, 0%, 90%, 0) 100%), hsl(0, 0%, 96%);
+  --bg-gradient-yellow-1: linear-gradient(to bottom right, hsl(38, 95%, 45%) 0%, hsla(38, 95%, 45%, 0) 50%);
+  --bg-gradient-yellow-2: linear-gradient(135deg, hsla(38, 95%, 45%, 0.2) 0%, hsla(28, 90%, 45%, 0) 60%), hsl(0, 0%, 96%);
+  --border-gradient-onyx: linear-gradient(to bottom right, hsl(0, 0%, 88%) 0%, hsla(0, 0%, 88%, 0) 50%);
+  --text-gradient-yellow: linear-gradient(to right, hsl(38, 95%, 45%), hsl(28, 90%, 45%));
+
+  --shadow-1: 0 4px 15px hsla(0, 0%, 0%, 0.05);
+  --shadow-2: 0 8px 20px hsla(0, 0%, 0%, 0.07);
+  --shadow-3: 0 12px 30px hsla(0, 0%, 0%, 0.09);
+  --shadow-4: 0 16px 35px hsla(0, 0%, 0%, 0.1);
+  --shadow-5: 0 20px 50px hsla(0, 0%, 0%, 0.12);
+}
 
 /*-----------------------------------*\
   #RESET
@@ -166,75 +133,41 @@ button {
   cursor: pointer;
 }
 
-input,
-textarea {
-  display: block;
-  width: 100%;
-  background: none;
-  font: inherit;
-}
-
 ::selection {
   background: var(--orange-yellow-crayola);
   color: var(--smoky-black);
 }
 
-:focus {
-  outline-color: var(--orange-yellow-crayola);
+:focus-visible {
+  outline: 2px solid var(--orange-yellow-crayola);
+  outline-offset: 2px;
 }
 
 html {
   font-family: var(--ff-poppins);
+  scrollbar-width: thin;
+  scrollbar-color: var(--orange-yellow-crayola) var(--onyx);
 }
 
 body {
   background: var(--smoky-black);
-  transition: background-color var(--transition-theme);
+  color: var(--white-1);
+  transition: background-color var(--transition-theme), color var(--transition-theme);
 }
 
-/* Add transitions to elements that change color */
+/* Smooth theme transitions on key containers */
 .sidebar,
 article,
 .navbar,
-.navbar-link,
 .theme-toggle-btn,
-h1,
-h2,
-h3,
-h4,
-h5,
-p,
-span,
-a,
-time,
-address,
-button,
-input,
-textarea,
 .icon-box,
 .service-item,
-.skill-progress-bg,
-.skill-progress-fill,
-.filter-select,
-.select-list,
-.project-item>a,
-.hice-post-item>a,
-.form-btn {
-  transition: background-color var(--transition-theme), color var(--transition-theme), border-color var(--transition-theme), box-shadow var(--transition-theme), opacity var(--transition-theme);
+.hice-post-item>a {
+  transition: background-color var(--transition-theme), border-color var(--transition-theme), box-shadow var(--transition-theme);
 }
-
-.icon-box::before,
-.service-item::before,
-.hice-post-item>a::before,
-.form-btn::before {
-  transition: background-color var(--transition-theme);
-}
-
-
-
 
 /*-----------------------------------*\
-  #REUSED STYLE
+  #REUSED STYLES
 \*-----------------------------------*/
 
 .sidebar,
@@ -344,9 +277,7 @@ article.active {
 
 .has-scrollbar::-webkit-scrollbar {
   width: 5px;
-  /* for vertical scrollbar */
   height: 5px;
-  /* for horizontal scrollbar */
 }
 
 .has-scrollbar::-webkit-scrollbar-track {
@@ -363,29 +294,27 @@ article.active {
   width: 20px;
 }
 
-.content-card {
-  position: relative;
-  background: var(--border-gradient-onyx);
-  padding: 15px;
-  padding-top: 45px;
-  border-radius: 14px;
-  box-shadow: var(--shadow-2);
-  cursor: pointer;
-  z-index: 1;
+/* Hide scrollbar thumb by default */
+::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  transition: background-color 0.3s ease;
 }
 
-.content-card::before {
-  content: "";
-  position: absolute;
-  inset: 1px;
-  background: var(--bg-gradient-jet);
-  border-radius: inherit;
-  z-index: -1;
+/* Show scrollbar thumb while scrolling in yellow */
+.is-scrolling::-webkit-scrollbar-thumb,
+.is-scrolling *::-webkit-scrollbar-thumb {
+  background-color: var(--orange-yellow-crayola, #ffdb70);
 }
 
+/* Firefox support */
+html {
+  scrollbar-color: transparent transparent;
+  transition: scrollbar-color 0.3s ease;
+}
 
-
-
+html.is-scrolling {
+  scrollbar-color: var(--orange-yellow-crayola, #ffdb70) transparent;
+}
 
 /*-----------------------------------*\
   #MAIN
@@ -396,10 +325,6 @@ main {
   margin-bottom: 75px;
   min-width: 259px;
 }
-
-
-
-
 
 /*-----------------------------------*\
   #SIDEBAR
@@ -526,52 +451,22 @@ main {
   font-size: var(--fs-7);
 }
 
-.contact-info address {
-  font-style: normal;
+.contact-info .contact-link:hover {
+  color: var(--orange-yellow-crayola);
 }
 
-.social-list {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 15px;
-  padding-bottom: 4px;
-  padding-left: 7px;
-}
-
-.social-item .social-link {
-  color: var(--light-gray-70);
-  font-size: 18px;
-}
-
-.social-item .social-link ion-icon {
-  color: var(--light-gray-70);
-  transition: color var(--transition-theme);
-}
-
-.social-item .social-link:hover {
-  color: var(--light-gray);
-}
-
-/* Style the theme toggle button container */
 .theme-toggle-container {
   display: flex;
   justify-content: center;
-  /* Or flex-start */
   align-items: center;
   padding: 10px 0;
-  /* Add some padding */
   margin-top: 10px;
-  /* Space from separator */
 }
 
-/* Style the theme toggle button */
 .theme-toggle-btn {
   background: none;
   border: 1px solid var(--jet);
-  /* Use current border color */
   color: var(--light-gray);
-  /* Use current secondary text color */
   padding: 8px 15px;
   border-radius: 10px;
   cursor: pointer;
@@ -579,37 +474,17 @@ main {
   align-items: center;
   gap: 8px;
   font-size: var(--fs-7);
-  /* transition is handled globally */
 }
 
 .theme-toggle-btn ion-icon {
   font-size: 18px;
-  /* Adjust icon size */
-  color: var(--light-gray);
-  /* Explicitly color icon */
-  transition: color var(--transition-theme);
+  color: var(--orange-yellow-crayola);
 }
-
-.theme-toggle-btn span {
-  color: var(--light-gray);
-  /* Explicitly color text */
-  transition: color var(--transition-theme);
-}
-
 
 .theme-toggle-btn:hover {
   color: var(--white-1);
-  /* Use primary text color on hover */
-  border-color: var(--light-gray);
-  /* Use secondary text color for border */
+  border-color: var(--orange-yellow-crayola);
 }
-
-.theme-toggle-btn:hover ion-icon,
-.theme-toggle-btn:hover span {
-  color: var(--white-1);
-  /* Use primary text color on hover */
-}
-
 
 /*-----------------------------------*\
   #NAVBAR
@@ -626,6 +501,11 @@ main {
   border-radius: 12px 12px 0 0;
   box-shadow: var(--shadow-2);
   z-index: 5;
+}
+
+.light-theme .navbar {
+  background: hsla(0, 0%, 100%, 0.85);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
 .navbar-list {
@@ -652,10 +532,6 @@ main {
   color: var(--orange-yellow-crayola);
 }
 
-
-
-
-
 /*-----------------------------------*\
   #ABOUT
 \*-----------------------------------*/
@@ -675,12 +551,7 @@ main {
   margin-bottom: 15px;
 }
 
-
-
-/**
- * #service 
- */
-
+/* Service / Interests */
 .service {
   margin-bottom: 35px;
 }
@@ -732,181 +603,11 @@ main {
 .service-item-text {
   color: var(--light-gray);
   font-size: var(--fs-6);
-  font-weight: var(--fw-3);
-  line-height: 1.6;
-}
-
-
-/**
- * #testimonials 
- */
-
-/*.testimonials { margin-bottom: 30px; }
-
-.testimonials-title { margin-bottom: 20px; }
-
-.testimonials-list {
-  display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
-  gap: 15px;
-  margin: 0 -15px;
-  padding: 25px 15px;
-  padding-bottom: 35px;
-  overflow-x: auto;
-  scroll-behavior: smooth;
-  overscroll-behavior-inline: contain;
-  scroll-snap-type: inline mandatory;
-}
-
-.testimonials-item {
-  min-width: 100%;
-  scroll-snap-align: center;
-}
-
-.testimonials-avatar-box {
-  position: absolute;
-  top: 0;
-  left: 0;
-  transform: translate(15px, -25px);
-  background: var(--bg-gradient-onyx);
-  border-radius: 14px;
-  box-shadow: var(--shadow-1);
-}
-
-.testimonials-item-title { margin-bottom: 7px; }
-
-.testimonials-text {
-  color: var(--light-gray);
-  font-size: var(--fs-6);
-  font-weight: var(--fw-300);
-  line-height: 1.6;
-  display: -webkit-box;
-  line-clamp: 4;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-
-/**
- * #testimonials-modal
- */
-/*
-.modal-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  z-index: 20;
-  pointer-events: none;
-  visibility: hidden;
-}
-
-.modal-container::-webkit-scrollbar { display: none; }
-
-.modal-container.active {
-  pointer-events: all;
-  visibility: visible;
-}
-
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
-  background: hsl(0, 0%, 5%);
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  z-index: 1;
-  transition: var(--transition-1);
-}
-
-.overlay.active {
-  opacity: 0.8;
-  visibility: visible;
-  pointer-events: all;
-}
-
-.testimonials-modal {
-  background: var(--eerie-black-2);
-  position: relative;
-  padding: 15px;
-  margin: 15px 12px;
-  border: 1px solid var(--jet);
-  border-radius: 14px;
-  box-shadow: var(--shadow-5);
-  transform: scale(1.2);
-  opacity: 0;
-  transition: var(--transition-1);
-  z-index: 2;
-}
-
-.modal-container.active .testimonials-modal {
-  transform: scale(1);
-  opacity: 1;
-}
-
-.modal-close-btn {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  background: var(--onyx);
-  border-radius: 8px;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: var(--white-2);
-  font-size: 18px;
-  opacity: 0.7;
-}
-
-.modal-close-btn:hover,
-.modal-close-btn:focus { opacity: 1; }
-
-.modal-close-btn ion-icon { --ionicon-stroke-width: 50px; }
-
-.modal-avatar-box {
-  background: var(--bg-gradient-onyx);
-  width: max-content;
-  border-radius: 14px;
-  margin-bottom: 15px;
-  box-shadow: var(--shadow-2);
-}
-
-.modal-img-wrapper > img { display: none; }
-
-.modal-title { margin-bottom: 4px; }
-
-.modal-content time {
-  font-size: var(--fs-6);
-  color: var(--light-gray-70);
-  font-weight: var(--fw-300);
-  margin-bottom: 10px;
-}
-
-.modal-content p {
-  color: var(--light-gray);
-  font-size: var(--fs-6);
   font-weight: var(--fw-300);
   line-height: 1.6;
 }
-*/
 
-/**
- * #clients 
- */
-
+/* Clients */
 .clients {
   margin-bottom: 15px;
 }
@@ -918,10 +619,8 @@ main {
   gap: 15px;
   margin: 0 -15px;
   padding: 25px;
-  padding-bottom: 25px;
   overflow-x: auto;
   scroll-behavior: smooth;
-  overscroll-behavior-inline: contain;
   scroll-snap-type: inline mandatory;
   scroll-padding-inline: 25px;
 }
@@ -941,10 +640,6 @@ main {
   filter: grayscale(0);
 }
 
-
-
-
-
 /*-----------------------------------*\
   #RESUME
 \*-----------------------------------*/
@@ -952,11 +647,6 @@ main {
 .article-title {
   margin-bottom: 30px;
 }
-
-
-/**
- * education and experience 
- */
 
 .timeline {
   margin-bottom: 30px;
@@ -1026,246 +716,12 @@ main {
   color: var(--orange-yellow-crayola);
 }
 
-/* Style links in timeline */
-
 .timeline-text a:hover {
   text-decoration: underline;
 }
 
-
-/**
- * skills 
- */
-
-.skills-title {
-  margin-bottom: 20px;
-}
-
-.skills-list {
-  padding: 20px;
-}
-
-
-.skills-item:not(:last-child) {
-  margin-bottom: 15px;
-}
-
-.skill .title-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  margin-bottom: 8px;
-}
-
-.skill .title-wrapper data {
-  color: var(--light-gray);
-  font-size: var(--fs-7);
-  font-weight: var(--fw-300);
-}
-
-.skill-progress-bg {
-  background: var(--jet);
-  width: 100%;
-  height: 8px;
-  border-radius: 10px;
-}
-
-.skill-progress-fill {
-  background: var(--text-gradient-yellow);
-  height: 100%;
-  border-radius: inherit;
-}
-
-
-
-
-
 /*-----------------------------------*\
-  #PORTFOLIO
-\*-----------------------------------*/
-
-.filter-list {
-  display: none;
-}
-
-.filter-select-box {
-  position: relative;
-  margin-bottom: 25px;
-}
-
-.filter-select {
-  background: var(--eerie-black-2);
-  color: var(--light-gray);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  padding: 12px 16px;
-  border: 1px solid var(--jet);
-  border-radius: 14px;
-  font-size: var(--fs-6);
-  font-weight: var(--fw-300);
-}
-
-.filter-select.active .select-icon {
-  transform: rotate(0.5turn);
-}
-
-.select-list {
-  background: var(--eerie-black-2);
-  position: absolute;
-  top: calc(100% + 6px);
-  width: 100%;
-  padding: 6px;
-  border: 1px solid var(--jet);
-  border-radius: 14px;
-  z-index: 2;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: 0.15s ease-in-out;
-}
-
-.filter-select.active+.select-list {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: all;
-}
-
-.select-item button {
-  background: var(--eerie-black-2);
-  color: var(--light-gray);
-  font-size: var(--fs-6);
-  font-weight: var(--fw-300);
-  text-transform: capitalize;
-  width: 100%;
-  padding: 8px 10px;
-  border-radius: 8px;
-}
-
-.select-item button:hover {
-  --eerie-black-2: hsl(240, 2%, 20%);
-  background-color: var(--onyx);
-}
-
-.project-list {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 30px;
-  margin-bottom: 10px;
-}
-
-.project-item {
-  display: none;
-}
-
-.project-item.active {
-  display: block;
-  animation: scaleUp 0.25s ease forwards;
-}
-
-@keyframes scaleUp {
-  0% {
-    transform: scale(0.5);
-  }
-
-  100% {
-    transform: scale(1);
-  }
-}
-
-.project-item>a {
-  width: 100%;
-}
-
-.project-img {
-  position: relative;
-  width: 100%;
-  height: 200px;
-  border-radius: 16px;
-  overflow: hidden;
-  margin-bottom: 15px;
-}
-
-.project-img::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: transparent;
-  z-index: 1;
-  transition: var(--transition-1);
-}
-
-.project-item>a:hover .project-img::before {
-  background: hsla(0, 0%, 0%, 0.5);
-}
-
-.project-item-icon-box {
-  --scale: 0.8;
-
-  background: var(--jet);
-  color: var(--orange-yellow-crayola);
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(var(--scale));
-  font-size: 20px;
-  padding: 18px;
-  border-radius: 12px;
-  opacity: 0;
-  z-index: 1;
-  transition: var(--transition-1);
-}
-
-.project-item>a:hover .project-item-icon-box {
-  --scale: 1;
-  opacity: 1;
-}
-
-.project-item-icon-box ion-icon {
-  --ionicon-stroke-width: 50px;
-  color: var(--orange-yellow-crayola);
-}
-
-.project-img img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: var(--transition-1);
-}
-
-.project-item>a:hover img {
-  transform: scale(1.1);
-}
-
-.project-title,
-.project-category {
-  margin-left: 10px;
-}
-
-.project-title {
-  color: var(--white-2);
-  font-size: var(--fs-5);
-  font-weight: var(--fw-400);
-  text-transform: capitalize;
-  line-height: 1.3;
-}
-
-.project-category {
-  color: var(--light-gray-70);
-  font-size: var(--fs-6);
-  font-weight: var(--fw-300);
-}
-
-
-
-
-
-/*-----------------------------------*\
-  #hice
+  #HICE
 \*-----------------------------------*/
 
 .hice-posts {
@@ -1313,7 +769,7 @@ main {
 }
 
 .hice-post-item>a:hover .hice-banner-box img {
-  transform: scale(1.1);
+  transform: scale(1.05);
 }
 
 .hice-content {
@@ -1364,456 +820,26 @@ main {
   color: var(--orange-yellow-crayola);
 }
 
-/* Style links in HICE content */
 .hice-content a:hover {
   text-decoration: underline;
 }
 
 /*-----------------------------------*\
-  #CONTACT
+  #RESPONSIVE DESIGN
 \*-----------------------------------*/
-/*
-.mapbox {
-  position: relative;
-  height: 250px;
-  width: 100%;
-  border-radius: 16px;
-  margin-bottom: 30px;
-  border: 1px solid var(--jet);
-  overflow: hidden;
-}
-
-.mapbox figure { height: 100%; }
-
-.mapbox iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-  filter: grayscale(1) invert(1);
-}
-*/
-.contact-form {
-  margin-bottom: 10px;
-}
-
-.form-title {
-  margin-bottom: 20px;
-}
-
-.input-wrapper {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 25px;
-  margin-bottom: 25px;
-}
-
-.form-input {
-  color: var(--white-2);
-  font-size: var(--fs-6);
-  font-weight: var(--fw-400);
-  padding: 13px 20px;
-  border: 1px solid var(--jet);
-  border-radius: 14px;
-  outline: none;
-  background-color: transparent;
-}
-
-.form-input::placeholder {
-  font-weight: var(--fw-500);
-}
-
-.form-input:focus {
-  border-color: var(--orange-yellow-crayola);
-}
-
-textarea.form-input {
-  min-height: 100px;
-  height: 120px;
-  max-height: 200px;
-  resize: vertical;
-  margin-bottom: 25px;
-}
-
-textarea.form-input::-webkit-resizer {
-  display: none;
-}
-
-.form-input:focus:invalid {
-  border-color: var(--bittersweet-shimmer);
-}
-
-.form-btn {
-  position: relative;
-  width: 100%;
-  background: var(--border-gradient-onyx);
-  color: var(--orange-yellow-crayola);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  padding: 13px 20px;
-  border-radius: 14px;
-  font-size: var(--fs-6);
-  text-transform: capitalize;
-  box-shadow: var(--shadow-3);
-  z-index: 1;
-  transition: var(--transition-1);
-}
-
-.form-btn::before {
-  content: "";
-  position: absolute;
-  inset: 1px;
-  background: var(--bg-gradient-jet);
-  border-radius: inherit;
-  z-index: -1;
-  transition: var(--transition-1);
-}
-
-.form-btn ion-icon {
-  font-size: 16px;
-}
-
-.form-btn:hover {
-  background: var(--bg-gradient-yellow-1);
-}
-
-.form-btn:hover::before {
-  background: var(--bg-gradient-yellow-2);
-}
-
-.form-btn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
-.form-btn:disabled:hover {
-  background: var(--border-gradient-onyx);
-}
-
-.form-btn:disabled:hover::before {
-  background: var(--bg-gradient-jet);
-}
-
-/*-----------------------------------*\
-  #LIGHT THEME STYLES
-\*-----------------------------------*/
-
-body.light-theme {
-  /* Redefine original variables with light theme values */
-
-  /* Backgrounds */
-  --smoky-black: var(--light-bg);
-  /* Main page background */
-  --eerie-black-2: var(--light-surface);
-  /* Sidebar/Article background */
-  --eerie-black-1: var(--light-surface-alt);
-  /* Used in icon-box before, hice before */
-  --onyx: var(--light-surface-alt);
-  /* Used as background/track/select hover */
-
-  /* Text */
-  --white-1: var(--light-text-primary);
-  /* Primary text (was white) */
-  --white-2: var(--light-text-primary);
-  /* Headings (was white) */
-  --light-gray: var(--light-text-secondary);
-  /* Secondary text (was light gray) */
-  --light-gray-70: hsla(0, 0%, 40%, 0.7);
-  /* Secondary text transparent */
-
-  /* Borders / Separators */
-  --jet: var(--light-border);
-
-  /* Accents */
-  --orange-yellow-crayola: var(--light-accent);
-  --vegas-gold: var(--light-accent-alt);
-  /* Used for timeline span */
-
-  /* Gradients (Map dark gradients to light ones) */
-  --bg-gradient-onyx: var(--light-bg-gradient-1);
-  /* Sidebar avatar bg */
-  --bg-gradient-jet: var(--light-bg-gradient-2);
-  /* Content card before, icon box before, form btn before */
-  --bg-gradient-yellow-1: linear-gradient(to bottom right, var(--light-accent) 0%, hsla(45, 100%, 55%, 0) 50%);
-  /* Info more btn hover */
-  --bg-gradient-yellow-2: linear-gradient(135deg, hsla(45, 100%, 55%, 0.251) 0%, hsla(35, 100%, 50%, 0) 59.86%), var(--light-surface);
-  /* Info more btn hover before, form btn hover before */
-  --border-gradient-onyx: var(--light-border-gradient);
-  /* Icon box bg, service item bg, content card bg, hice item bg, form btn bg */
-  --text-gradient-yellow: var(--light-text-gradient-yellow);
-  /* Article title after, timeline after, skill fill */
-
-  /* Shadows */
-  --shadow-1: var(--light-shadow);
-  --shadow-2: var(--light-shadow);
-  --shadow-3: var(--light-shadow-heavy);
-  --shadow-4: var(--light-shadow-heavy);
-  --shadow-5: 0 24px 80px hsla(0, 0%, 0%, 0.12);
-  /* Adjust if needed */
-
-  /* Specific Elements Overrides */
-  .sidebar,
-  article {
-    background: var(--light-surface);
-    border: 1px solid var(--light-border);
-    box-shadow: var(--shadow-1);
-    /* Use light shadow */
-  }
-
-  /* Icon box */
-  .icon-box {
-    background: var(--light-border-gradient);
-    color: var(--light-accent);
-    box-shadow: var(--shadow-1);
-  }
-
-  .icon-box::before {
-    background: var(--light-surface-alt);
-  }
-
-  .icon-box ion-icon {
-    color: var(--light-accent);
-  }
-
-  /* Info content title */
-  .info-content .title {
-    background: var(--light-surface-alt);
-    color: var(--light-text-primary);
-  }
-
-  /* Social links */
-  .social-item .social-link ion-icon {
-    color: var(--light-text-secondary);
-  }
-
-  .social-item .social-link:hover ion-icon {
-    color: var(--light-text-primary);
-  }
-
-
-  /* Navbar */
-  .navbar {
-    background: hsla(0, 0%, 98%, 0.85);
-    /* Lighter background with blur */
-    border-color: var(--light-border);
-    /* Use light border */
-    box-shadow: var(--shadow-2);
-  }
-
-  .navbar-link {
-    color: var(--light-text-secondary);
-  }
-
-  .navbar-link:hover,
-  .navbar-link:focus {
-    color: var(--light-text-primary);
-  }
-
-  .navbar-link.active {
-    color: var(--light-accent);
-  }
-
-  /* Selection */
-  ::selection {
-    background: var(--light-accent);
-    color: var(--light-bg);
-  }
-
-  /* Scrollbar */
-  .has-scrollbar::-webkit-scrollbar-track {
-    background: var(--light-border);
-  }
-
-  .has-scrollbar::-webkit-scrollbar-thumb {
-    background: var(--light-accent);
-  }
-
-  /* Skill progress bar */
-  .skill-progress-bg {
-    background: var(--light-border);
-  }
-
-  .skill-progress-fill {
-    background: var(--light-text-gradient-yellow);
-  }
-
-  /* Filter/Select */
-  .filter-select,
-  .select-list {
-    background: var(--light-surface);
-    border-color: var(--light-border);
-    color: var(--light-text-secondary);
-  }
-
-  .select-item button {
-    background: var(--light-surface);
-    color: var(--light-text-secondary);
-  }
-
-  .select-item button:hover {
-    background-color: var(--light-surface-alt);
-    color: var(--light-text-primary);
-  }
-
-  /* Project Item Icon Box */
-  .project-item-icon-box {
-    background: var(--light-surface);
-    color: var(--light-accent);
-  }
-
-  .project-item-icon-box ion-icon {
-    color: var(--light-accent);
-  }
-
-  /* HICE Item */
-  .hice-post-item>a::before {
-    background: var(--light-surface-alt);
-  }
-
-  /* Input fields */
-  .form-input {
-    color: var(--light-text-primary);
-    border: 1px solid var(--light-border);
-    background-color: var(--light-bg);
-  }
-
-  .form-input::placeholder {
-    color: var(--light-text-secondary);
-    font-weight: var(--fw-400);
-  }
-
-  .form-input:focus {
-    border-color: var(--light-accent);
-  }
-
-  /* Buttons like form-btn, info_more-btn */
-  .form-btn,
-  .info_more-btn {
-    background: var(--light-border-gradient);
-    color: var(--light-accent);
-    box-shadow: var(--shadow-2);
-  }
-
-  .form-btn::before,
-  .info_more-btn::before {
-    background: var(--light-bg-gradient-2);
-  }
-
-  .form-btn ion-icon,
-  .info_more-btn ion-icon {
-    color: var(--light-accent);
-  }
-
-  .form-btn:hover {
-    background: var(--light-text-gradient-yellow);
-    /* Example hover */
-    color: var(--light-bg);
-  }
-
-  .form-btn:hover::before {
-    background: transparent;
-    /* Adjust hover background */
-  }
-
-  .form-btn:hover ion-icon {
-    color: var(--light-bg);
-  }
-
-  .info_more-btn:hover {
-    background: var(--bg-gradient-yellow-1);
-    /* Keep using the variable name, it maps to light gradient */
-  }
-
-  .info_more-btn:hover::before {
-    background: var(--bg-gradient-yellow-2);
-    /* Keep using the variable name */
-  }
-
-  /* Theme Toggle Button Light Style */
-  .theme-toggle-btn {
-    border-color: var(--light-border);
-    color: var(--light-text-secondary);
-  }
-
-  .theme-toggle-btn ion-icon,
-  .theme-toggle-btn span {
-    color: var(--light-text-secondary);
-  }
-
-  .theme-toggle-btn:hover {
-    color: var(--light-text-primary);
-    border-color: var(--light-text-secondary);
-  }
-
-  .theme-toggle-btn:hover ion-icon,
-  .theme-toggle-btn:hover span {
-    color: var(--light-text-primary);
-  }
-
-  /* Fix client image hover for light theme */
-  .clients-item img {
-    filter: grayscale(1) opacity(0.7);
-    /* Slightly faded in light mode */
-  }
-
-  .clients-item img:hover {
-    filter: grayscale(0) opacity(1);
-  }
-
-}
-
-/*-----------------------------------*\
-  #RESPONSIVE
-\*-----------------------------------*/
-
-/**
- * responsive larger than 450px screen
- */
 
 @media (min-width: 450px) {
-
-  /**
-   * client
-   */
-
   .clients-item {
     min-width: calc(33.33% - 10px);
   }
 
-
-
-  /**
-   * #PORTFOLIO, hice 
-   */
-
-  .project-img,
   .hice-banner-box {
     height: auto;
   }
-
 }
 
-
-
-
-
-/**
- * responsive larger than 580px screen
- */
-
 @media (min-width: 580px) {
-
-  /**
-   * CUSTOM PROPERTY
-   */
-
   :root {
-
-    /**
-     * typography
-     */
-
     --fs-1: 32px;
     --fs-2: 24px;
     --fs-3: 26px;
@@ -1821,14 +847,7 @@ body.light-theme {
     --fs-6: 15px;
     --fs-7: 15px;
     --fs-8: 12px;
-
   }
-
-
-
-  /**
-   * #REUSED STYLE
-   */
 
   .sidebar,
   article {
@@ -1854,22 +873,10 @@ body.light-theme {
     font-size: 18px;
   }
 
-
-
-  /**
-   * #MAIN
-   */
-
   main {
     margin-top: 60px;
     margin-bottom: 100px;
   }
-
-
-
-  /**
-   * #SIDEBAR
-   */
 
   .sidebar {
     max-height: 180px;
@@ -1928,12 +935,6 @@ body.light-theme {
     width: calc(100% - 64px);
   }
 
-
-
-  /**
-   * #NAVBAR
-   */
-
   .navbar {
     border-radius: 20px 20px 0 0;
   }
@@ -1946,12 +947,6 @@ body.light-theme {
     --fs-8: 14px;
   }
 
-
-
-  /**
-   * #ABOUT
-   */
-
   .about .article-title {
     margin-bottom: 20px;
   }
@@ -1959,8 +954,6 @@ body.light-theme {
   .about-text {
     margin-bottom: 40px;
   }
-
-  /* service */
 
   .service-item {
     display: flex;
@@ -1979,81 +972,6 @@ body.light-theme {
     text-align: left;
   }
 
-  /* testimonials */
-
-  .testimonials-title {
-    margin-bottom: 25px;
-  }
-
-  .testimonials-list {
-    gap: 30px;
-    margin: 0 -30px;
-    padding: 30px;
-    padding-bottom: 35px;
-  }
-
-  .content-card {
-    padding: 30px;
-    padding-top: 25px;
-  }
-
-  .testimonials-avatar-box {
-    transform: translate(30px, -30px);
-    border-radius: 20px;
-  }
-
-  .testimonials-avatar-box img {
-    width: 80px;
-  }
-
-  .testimonials-item-title {
-    margin-bottom: 10px;
-    margin-left: 95px;
-  }
-
-  .testimonials-text {
-    line-clamp: 2;
-    -webkit-line-clamp: 2;
-  }
-
-  /* testimonials modal */
-
-  .modal-container {
-    padding: 20px;
-  }
-
-  .testimonials-modal {
-    display: flex;
-    justify-content: flex-start;
-    align-items: stretch;
-    gap: 25px;
-    padding: 30px;
-    border-radius: 20px;
-  }
-
-  .modal-img-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .modal-avatar-box {
-    border-radius: 18px;
-    margin-bottom: 0;
-  }
-
-  .modal-avatar-box img {
-    width: 65px;
-  }
-
-  .modal-img-wrapper>img {
-    display: block;
-    flex-grow: 1;
-    width: 35px;
-  }
-
-  /* clients */
-
   .clients-list {
     gap: 50px;
     margin: 0 -30px;
@@ -2064,12 +982,6 @@ body.light-theme {
   .clients-item {
     min-width: calc(33.33% - 35px);
   }
-
-
-
-  /**
-   * #RESUME
-   */
 
   .timeline-list {
     margin-left: 65px;
@@ -2085,17 +997,6 @@ body.light-theme {
     left: -43px;
   }
 
-  .skills-item:not(:last-child) {
-    margin-bottom: 25px;
-  }
-
-
-
-  /**
-   * #PORTFOLIO, hice
-   */
-
-  .project-img,
   .hice-banner-box {
     border-radius: 16px;
   }
@@ -2107,195 +1008,39 @@ body.light-theme {
   .hice-content {
     padding: 25px;
   }
-
-
-
-  /**
-   * #CONTACT
-   */
-
-  .mapbox {
-    height: 380px;
-    border-radius: 18px;
-  }
-
-  .input-wrapper {
-    gap: 30px;
-    margin-bottom: 30px;
-  }
-
-  .form-input {
-    padding: 15px 20px;
-  }
-
-  textarea.form-input {
-    margin-bottom: 30px;
-  }
-
-  .form-btn {
-    --fs-6: 16px;
-    padding: 16px 20px;
-  }
-
-  .form-btn ion-icon {
-    font-size: 18px;
-  }
-
 }
 
-
-
-
-
-/**
- * responsive larger than 768px screen
- */
-
 @media (min-width: 768px) {
-
-  /**
-   * REUSED STYLE
-   */
 
   .sidebar,
   article {
     width: 700px;
   }
 
-  .has-scrollbar::-webkit-scrollbar-button {
-    width: 100px;
-  }
-
-
-
-  /**
-   * SIDEBAR
-   */
-
   .contacts-list {
     grid-template-columns: 1fr 1fr;
     gap: 30px 15px;
   }
 
-
-
-  /**
-   * NAVBAR
-   */
-
   .navbar-link {
     --fs-8: 15px;
   }
-
-
-
-  /**
-   * ABOUT
-   */
-
-  /* testimonials modal */
-
-  .testimonials-modal {
-    gap: 35px;
-    max-width: 680px;
-  }
-
-  .modal-avatar-box img {
-    width: 80px;
-  }
-
-
-
-  /**
-   * PORTFOLIO
-   */
 
   .article-title {
     padding-bottom: 20px;
   }
 
-  .filter-select-box {
-    display: none;
-  }
-
-  .filter-list {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 25px;
-    padding-left: 5px;
-    margin-bottom: 30px;
-  }
-
-  .filter-item button {
-    color: var(--light-gray);
-    font-size: var(--fs-5);
-    transition: var(--transition-1);
-  }
-
-  .filter-item button:hover {
-    color: var(--light-gray-70);
-  }
-
-  .filter-item button.active {
-    color: var(--orange-yellow-crayola);
-  }
-
-  /* portfolio and hice grid */
-
-  .project-list,
   .hice-posts-list {
     grid-template-columns: 1fr 1fr;
   }
-
-
-
-  /**
-   * CONTACT
-   */
-
-  .input-wrapper {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .form-btn {
-    width: max-content;
-    margin-left: auto;
-  }
-
 }
 
-
-
-
-
-/**
- * responsive larger than 1024px screen
- */
-
 @media (min-width: 1024px) {
-
-  /**
-   * CUSTOM PROPERTY
-   */
-
   :root {
-
-    /**
-    * shadow
-    */
-
     --shadow-1: -4px 8px 24px hsla(0, 0%, 0%, 0.125);
     --shadow-2: 0 16px 30px hsla(0, 0%, 0%, 0.125);
     --shadow-3: 0 16px 40px hsla(0, 0%, 0%, 0.125);
-
   }
-
-
-
-  /**
-   * REUSED STYLE
-   */
 
   .sidebar,
   article {
@@ -2303,27 +1048,16 @@ body.light-theme {
     box-shadow: var(--shadow-5);
   }
 
-
-
-  /**
-   * MAIN 
-   */
-
   main {
     margin-bottom: 60px;
   }
 
   .main-content {
     position: relative;
-    width: max-content;
+    width: 100%;
+    max-width: 950px;
     margin: auto;
   }
-
-
-
-  /**
-   * NAVBAR
-   */
 
   .navbar {
     position: absolute;
@@ -2346,69 +1080,23 @@ body.light-theme {
     font-weight: var(--fw-500);
   }
 
-
-
-  /**
-   * ABOUT
-   */
-
-  /* service */
-
   .service-list {
     grid-template-columns: 1fr 1fr;
     gap: 20px 25px;
   }
 
-  /* testimonials */
-
-  .testimonials-item {
-    min-width: calc(50% - 15px);
-  }
-
-  /* clients */
-
   .clients-item {
     min-width: calc(25% - 38px);
   }
 
-
-
-  /**
-   * PORTFOLIO
-   */
-
-  .project-list {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-
-
-  /**
-   * hice
-   */
-
   .hice-banner-box {
     height: 230px;
   }
-
 }
 
-
-
-
-
-/**
- * responsive larger than 1250px screen
- */
-
 @media (min-width: 1250px) {
-
-  /**
-   * RESET
-   */
-
   body::-webkit-scrollbar {
-    width: 20px;
+    width: 12px;
   }
 
   body::-webkit-scrollbar-track {
@@ -2416,39 +1104,14 @@ body.light-theme {
   }
 
   body::-webkit-scrollbar-thumb {
-    border: 5px solid var(--smoky-black);
-    background: hsla(0, 0%, 100%, 0.1);
+    border: 3px solid var(--smoky-black);
+    background: hsla(0, 0%, 100%, 0.2);
     border-radius: 20px;
-    box-shadow: inset 1px 1px 0 hsla(0, 0%, 100%, 0.11),
-      inset -1px -1px 0 hsla(0, 0%, 100%, 0.11);
   }
 
   body::-webkit-scrollbar-thumb:hover {
-    background: hsla(0, 0%, 100%, 0.15);
+    background: hsla(0, 0%, 100%, 0.3);
   }
-
-  body::-webkit-scrollbar-button {
-    height: 60px;
-  }
-
-  /* Light theme scrollbar */
-  body.light-theme::-webkit-scrollbar-track {
-    background: var(--light-border);
-  }
-
-  body.light-theme::-webkit-scrollbar-thumb {
-    border-color: var(--light-bg);
-    background: hsla(0, 0%, 0%, 0.15);
-  }
-
-  body.light-theme::-webkit-scrollbar-thumb:hover {
-    background: hsla(0, 0%, 0%, 0.25);
-  }
-
-
-  /**
-   * REUSED STYLE
-   */
 
   .sidebar,
   article {
@@ -2458,12 +1121,6 @@ body.light-theme {
   article {
     min-height: 100%;
   }
-
-
-
-  /**
-   * MAIN
-   */
 
   main {
     max-width: 1200px;
@@ -2479,12 +1136,6 @@ body.light-theme {
     width: 75%;
     margin: 0;
   }
-
-
-
-  /**
-   * SIDEBAR
-   */
 
   .sidebar {
     position: sticky;
@@ -2544,18 +1195,7 @@ body.light-theme {
     opacity: 0;
   }
 
-  .social-list {
-    justify-content: center;
-  }
-
-
-
-  /**
-	 * RESUME
-	 */
-
   .timeline-text {
     max-width: 700px;
   }
-
 }
