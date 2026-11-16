@@ -1,0 +1,25 @@
+# macOS metadata and editor-local settings
+.DS_Store
+._*
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Local dependencies, preview output, and test artifacts
+node_modules/
+dist/
+coverage/
+playwright-report/
+test-results/
+*.log
+__pycache__/
+.venv/
+
+# Local secrets and Apps Script CLI credentials/configuration
+.env
+.env.*
+!.env.example
+.clasprc.json
+.clasp.json
