@@ -1704,14 +1704,71 @@ body.rumor-modal-open {
 }
 
 /*-----------------------------------*\
-  #RUMOR MILL MODE — hide personal sidebar
+  #RUMOR MILL MODE — hide personal info, keep theme toggle, widen layout
 \*-----------------------------------*/
 
+/* The sidebar shrinks to a borderless strip that holds only the theme toggle. */
 .rumor-mill-mode .sidebar {
+  max-height: none;
+  overflow: visible;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+  margin-bottom: 12px;
+}
+
+.rumor-mill-mode .sidebar-info,
+.rumor-mill-mode .sidebar-info_more > :not(.theme-toggle-container) {
   display: none;
 }
 
+.rumor-mill-mode .sidebar-info_more {
+  opacity: 1;
+  visibility: visible;
+}
+
+.rumor-mill-mode .theme-toggle-container {
+  justify-content: flex-end;
+  margin: 0;
+  padding: 0;
+}
+
+@media (min-width: 580px) {
+  .rumor-mill-mode main {
+    margin-inline: 24px;
+  }
+
+  .rumor-mill-mode .sidebar,
+  .rumor-mill-mode article {
+    width: auto;
+  }
+
+  .rumor-mill-mode .sidebar {
+    margin-bottom: 16px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .rumor-mill-mode .main-content {
+    max-width: none;
+  }
+}
+
 @media (min-width: 1250px) {
+  .rumor-mill-mode main {
+    display: block;
+    max-width: 1600px;
+    margin-inline: auto;
+    padding-inline: 24px;
+  }
+
+  .rumor-mill-mode .sidebar {
+    position: static;
+    height: auto;
+    padding-top: 0;
+  }
+
   .rumor-mill-mode .main-content {
     width: 100%;
     min-width: 0;
