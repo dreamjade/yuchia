@@ -6,6 +6,12 @@ const RUMOR_HEADERS = ['Institution', 'Category', 'Deadline', 'JobUrl', 'Status'
 const RUMOR_CATEGORIES = ['Postdoc', 'Faculty'];
 const RUMOR_STATUSES = ['Ad Posted', 'Shortlist / Reference Req', 'Interviews', 'Offer Made', 'Offer Accepted'];
 const RUMOR_MAX_LOG_LENGTH = 45000;
+// Server-side cache of the GET response, so most loads skip opening the spreadsheet.
+const RUMOR_CACHE_KEY = 'rumorRows:v1';
+const RUMOR_CACHE_GENERATION_KEY = 'rumorRows:generation';
+const RUMOR_CACHE_SECONDS = 300; // Upper bound on staleness after edits that skip onEdit (e.g. imports).
+const RUMOR_CACHE_CHUNK_SIZE = 90000; // CacheService values are limited to 100 KB each.
+const RUMOR_CACHE_MAX_CHUNKS = 20;
 
 function setupRumorMill() {
   const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
@@ -16,12 +22,19 @@ function setupRumorMill() {
 
 function doGet(e) {
   try {
+    const cached = readCachedRows_();
+    if (cached) return jsonTextOutput_(cached);
+
+    // A write during this read bumps the generation; then this (possibly stale) result is not cached.
+    const generation = cacheGeneration_();
     const sheet = getRumorSheet_();
     const timezone = sheet.getParent().getSpreadsheetTimeZone();
     const rows = readRows_(sheet)
       .filter(function (row) { return String(row[0]).trim() !== ''; })
       .map(function (row) { return rowToObject_(row, timezone); });
-    return jsonOutput_(rows);
+    const json = JSON.stringify(rows);
+    if (cacheGeneration_() === generation) writeCachedRows_(json);
+    return jsonTextOutput_(json);
   } catch (error) {
     return errorOutput_(error, 'Unable to load the tracker. Please try again later.');
   }
@@ -73,11 +86,80 @@ function doPost(e) {
     // The apostrophe escape also prevents setValues from interpreting formulas.
     sheet.getRange(rowNumber, 1, 1, RUMOR_HEADERS.length).setNumberFormat('@').setValues([values]);
     SpreadsheetApp.flush();
+    clearCachedRows_();
     return jsonOutput_({ success: true, row: result });
   } catch (error) {
     return errorOutput_(error, 'Unable to save the update. Refresh the tracker before retrying.');
   } finally {
     if (lock && lock.hasLock()) lock.releaseLock();
+  }
+}
+
+/** Simple trigger: manual edits in the tracker sheet refresh the API cache right away. */
+function onEdit(e) {
+  clearCachedRows_();
+}
+
+function cacheGeneration_() {
+  try {
+    return CacheService.getScriptCache().get(RUMOR_CACHE_GENERATION_KEY) || '';
+  } catch (error) {
+    return '';
+  }
+}
+
+function readCachedRows_() {
+  try {
+    const cache = CacheService.getScriptCache();
+    const meta = cache.get(RUMOR_CACHE_KEY); // "<token>:<chunkCount>"
+    if (!meta) return null;
+    const parts = meta.split(':');
+    const count = Number(parts[1]);
+    if (!parts[0] || !(count > 0) || count > RUMOR_CACHE_MAX_CHUNKS) return null;
+    const keys = [];
+    for (let i = 0; i < count; i++) keys.push(RUMOR_CACHE_KEY + ':' + parts[0] + ':' + i);
+    const chunks = cache.getAll(keys);
+    let encoded = '';
+    for (let i = 0; i < keys.length; i++) {
+      if (chunks[keys[i]] == null) return null; // A chunk expired early; rebuild from the sheet.
+      encoded += chunks[keys[i]];
+    }
+    const zipped = Utilities.newBlob(Utilities.base64Decode(encoded), 'application/x-gzip');
+    return Utilities.ungzip(zipped).getDataAsString('UTF-8');
+  } catch (error) {
+    return null;
+  }
+}
+
+function writeCachedRows_(json) {
+  try {
+    // Gzip shrinks the JSON several-fold, so even a large tracker fits in a few cache entries.
+    const zipped = Utilities.gzip(Utilities.newBlob(json, 'application/json', 'rows.json'));
+    const encoded = Utilities.base64Encode(zipped.getBytes());
+    const count = Math.ceil(encoded.length / RUMOR_CACHE_CHUNK_SIZE);
+    if (count > RUMOR_CACHE_MAX_CHUNKS) return; // Too large to cache; keep reading the sheet.
+    const token = Utilities.getUuid().slice(0, 8);
+    const values = {};
+    for (let i = 0; i < count; i++) {
+      values[RUMOR_CACHE_KEY + ':' + token + ':' + i] =
+        encoded.slice(i * RUMOR_CACHE_CHUNK_SIZE, (i + 1) * RUMOR_CACHE_CHUNK_SIZE);
+    }
+    const cache = CacheService.getScriptCache();
+    cache.putAll(values, RUMOR_CACHE_SECONDS);
+    // Publish the pointer last, so readers never see a pointer to missing chunks.
+    cache.put(RUMOR_CACHE_KEY, token + ':' + count, RUMOR_CACHE_SECONDS);
+  } catch (error) {
+    // Caching is an optimization only.
+  }
+}
+
+function clearCachedRows_() {
+  try {
+    const cache = CacheService.getScriptCache();
+    cache.put(RUMOR_CACHE_GENERATION_KEY, Utilities.getUuid(), 21600);
+    cache.remove(RUMOR_CACHE_KEY);
+  } catch (error) {
+    // If the cache is unavailable, entries still expire after RUMOR_CACHE_SECONDS.
   }
 }
 
@@ -232,6 +314,10 @@ function publicError_(message) {
 
 function errorOutput_(error, fallback) {
   return jsonOutput_({ success: false, error: error.publicMessage || fallback });
+}
+
+function jsonTextOutput_(json) {
+  return ContentService.createTextOutput(json).setMimeType(ContentService.MimeType.JSON);
 }
 
 function jsonOutput_(value) {

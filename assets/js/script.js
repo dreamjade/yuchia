@@ -217,6 +217,21 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
     if (!result.institution || !categories.includes(result.category)) throw new Error("Invalid row from the tracker.");
     return result;
   };
+  // Last successful load, kept in this browser so the table can show instantly on the next
+  // visit while fresh data loads. Purely a convenience: any storage error just skips it.
+  const cacheKey = `rumorMillRows:v1:${RUMOR_API_URL}`;
+  const cacheMaxAgeMs = 7 * 24 * 60 * 60 * 1000;
+  const readCachedRows = () => {
+    try {
+      const cached = JSON.parse(localStorage.getItem(cacheKey) || "null");
+      if (!cached || !Array.isArray(cached.rows) || Date.now() - cached.savedAt > cacheMaxAgeMs) return [];
+      return cached.rows.flatMap(row => { try { return [normalizeRow(row)]; } catch { return []; } });
+    } catch { return []; }
+  };
+  const saveCachedRows = () => {
+    if (demoMode) return;
+    try { localStorage.setItem(cacheKey, JSON.stringify({ savedAt: Date.now(), rows })); } catch { /* Storage full or blocked. */ }
+  };
   const rowKey = row => `${row.institution.trim().toLowerCase()}\u0000${row.category.toLowerCase()}`;
   const showMessage = (element, message, state = "") => {
     element.textContent = message;
@@ -308,7 +323,7 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
     loading = true;
     refreshButton.disabled = true;
     tableBody.setAttribute("aria-busy", "true");
-    showMessage(feedback, "Loading the latest rumors…");
+    showMessage(feedback, rows.length ? "Checking for new updates…" : "Loading the latest rumors…");
     renderRows();
     try {
       if (demoMode) {
@@ -322,6 +337,7 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
         });
         if (data.length && !validRows.length) throw new Error("No valid positions were returned.");
         rows = validRows;
+        saveCachedRows();
         if (validRows.length < data.length) {
           showMessage(feedback, "Some entries could not be displayed. Please contact the site owner.", "error");
           return;
@@ -495,6 +511,7 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
       const index = rows.findIndex(row => rowKey(row) === rowKey(savedRow));
       if (index < 0) rows.push(savedRow);
       else rows[index] = savedRow;
+      saveCachedRows();
       statusFilter.value = "";
       searchInput.value = "";
       categoryButtons[0].click();
@@ -513,5 +530,6 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
 
   document.getElementById("rumor-demo-notice").hidden = !demoMode;
   updateSortHeaders();
+  if (!demoMode) rows = readCachedRows();
   loadRows();
 })();
