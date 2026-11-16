@@ -50,11 +50,9 @@ const handleHashChange = (e) => {
 };
 
 window.addEventListener("hashchange", handleHashChange);
-if (document.readyState === "loading") {
-  window.addEventListener("DOMContentLoaded", () => handleHashChange());
-} else {
-  handleHashChange();
-}
+// This script loads at the end of <body>, so the pages already exist. Route immediately:
+// waiting for DOMContentLoaded breaks when Cloudflare Rocket Loader defers scripts past it.
+handleHashChange();
 
 navigationLinks.forEach(link => {
   link.addEventListener("click", () => {
