@@ -21,6 +21,13 @@ const hashForPage = pageName => `#${pageName.replace(/\s+/g, "-")}`;
 const setActivePage = (pageName, shouldScroll = false) => {
   const targetPageName = validPageNames.includes(pageName) ? pageName : "about";
 
+  // Hide the personal sidebar on the anonymous Rumor Mill page
+  document.body.classList.toggle("rumor-mill-mode", targetPageName === "rumor mill");
+  if (targetPageName === "rumor mill" && sidebar?.classList.contains("active")) {
+    sidebar.classList.remove("active");
+    sidebarBtn?.setAttribute("aria-expanded", "false");
+  }
+
   // Toggle active class on articles
   pages.forEach(page => {
     page.classList.toggle("active", page.dataset.page === targetPageName);
