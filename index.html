@@ -1483,10 +1483,14 @@
                 <ion-icon name="refresh-outline" aria-hidden="true"></ion-icon>Refresh
               </button>
               <button type="button" id="rumor-add" class="rumor-button rumor-button-primary">
-                <ion-icon name="add-circle-outline" aria-hidden="true"></ion-icon>+ Add Job / Rumor
+                <ion-icon name="add-circle-outline" aria-hidden="true"></ion-icon>Add New Job
               </button>
             </div>
           </div>
+          <p class="rumor-add-hint">
+            <strong>Job already listed?</strong> Search for it and use <span class="rumor-hint-chip">+ Update</span> on
+            its row so the news joins its log. Use <strong>Add New Job</strong> only for positions not in the tracker yet.
+          </p>
         </section>
 
         <p id="rumor-feedback" class="rumor-feedback" role="status" aria-live="polite"></p>
@@ -1530,7 +1534,7 @@
     <form id="rumor-form" class="rumor-form">
       <header>
         <p class="rumor-eyebrow">Contribute to the community</p>
-        <h2 id="rumor-modal-title">Add a job or rumor</h2>
+        <h2 id="rumor-modal-title">Add a new job</h2>
         <p id="rumor-modal-description">Share a brief update without names or personal information. Required fields are
           marked *.</p>
       </header>
@@ -1538,8 +1542,9 @@
       <label class="rumor-field" for="rumor-institution">
         <span>Institution / Fellowship / Position *</span>
         <input id="rumor-institution" name="institution" type="text" maxlength="200" required
-          placeholder="e.g., NASA Hubble Fellowship" autocomplete="off">
+          placeholder="e.g., NASA Hubble Fellowship" autocomplete="off" aria-describedby="rumor-matches">
       </label>
+      <div id="rumor-matches" class="rumor-matches" aria-live="polite" hidden></div>
 
       <div class="rumor-form-row">
         <label class="rumor-field" for="rumor-category">

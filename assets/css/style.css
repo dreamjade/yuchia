@@ -1774,3 +1774,61 @@ body.rumor-modal-open {
     min-width: 0;
   }
 }
+
+/*-----------------------------------*\
+  #RUMOR MILL — steer duplicates to "+ Update"
+\*-----------------------------------*/
+
+.rumor-add-hint {
+  margin-top: 12px;
+  color: var(--light-gray);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.rumor-add-hint strong {
+  color: var(--white-2);
+  font-weight: var(--fw-500);
+}
+
+.rumor-hint-chip {
+  display: inline-block;
+  padding: 0 7px;
+  border: 1px solid var(--jet);
+  border-radius: 6px;
+  background: var(--onyx);
+  color: var(--orange-yellow-crayola);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.rumor-matches {
+  margin: -4px 0 14px;
+  padding: 10px 12px;
+  border: 1px solid var(--orange-yellow-crayola);
+  border-radius: 10px;
+  color: var(--light-gray);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.rumor-matches strong {
+  color: var(--orange-yellow-crayola);
+}
+
+.rumor-matches ul {
+  display: grid;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.rumor-matches .rumor-row-update {
+  width: 100%;
+  justify-content: flex-start;
+  white-space: normal;
+  text-align: left;
+}
+
+.rumor-matches .rumor-row-update span {
+  color: var(--light-gray-70);
+}

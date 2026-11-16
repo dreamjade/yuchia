@@ -275,6 +275,30 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
     }
   };
 
+  // Steer "Add New Job" toward existing rows: loose name matching for suggestions only
+  // (the server still merges exact institution + category matches on its own).
+  const matchesBox = document.getElementById("rumor-matches");
+  const ignoredWords = new Set(["the", "of", "and", "for", "in", "at", "de", "a", "an", "position", "positions"]);
+  const looseName = value => String(value).normalize("NFKD").replace(/[̀-ͯ]/g, "")
+    .toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+  const findMatches = text => {
+    const query = looseName(text);
+    const words = query.split(" ").filter(word => word.length > 1 && !ignoredWords.has(word));
+    if (!words.length || query.length < 3) return [];
+    return rows
+      .map((row, index) => ({ row, index, name: looseName(row.institution) }))
+      .filter(({ name }) => name === query || words.every(word => name.includes(word)))
+      .sort((a, b) => (b.name === query) - (a.name === query) || a.name.length - b.name.length)
+      .slice(0, 4);
+  };
+  const renderMatches = () => {
+    const matches = editingRow ? [] : findMatches(fields.institution.value);
+    matchesBox.hidden = !matches.length;
+    matchesBox.innerHTML = matches.length ? `<p><strong>Already listed?</strong> Update the existing entry instead of adding a duplicate:</p>
+      <ul>${matches.map(({ row, index }) => `<li><button type="button" class="rumor-row-update" data-rumor-switch="${index}">
+        + Update “${escapeHtml(row.institution)}” <span>(${escapeHtml(row.category)})</span></button></li>`).join("")}</ul>` : "";
+  };
+
   const openModal = row => {
     editingRow = row ? { ...row } : null;
     form.reset();
@@ -287,11 +311,12 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
     fields.category.disabled = Boolean(row);
     fields.status.value = row ? row.status : "Ad Posted";
     characterCount.textContent = "0 / 500";
-    document.getElementById("rumor-modal-title").textContent = row ? "Update this position" : "Add a job / rumor";
+    document.getElementById("rumor-modal-title").textContent = row ? "Update this position" : "Add a new job";
     document.getElementById("rumor-modal-description").textContent = row
       ? "The position details are locked. Your dated update will be appended to its existing log."
-      : "Share a job or a brief update. Matching institution names and categories are added to the same log.";
-    dialog.showModal();
+      : "Only for jobs that are not in the tracker yet. If it is already listed, use + Update on its row instead.";
+    renderMatches();
+    if (!dialog.open) dialog.showModal();
     document.body.classList.add("rumor-modal-open");
     (row ? fields.status : fields.institution).focus();
   };
@@ -319,6 +344,17 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
   tableBody.addEventListener("click", event => {
     const button = event.target.closest("[data-rumor-update]");
     if (button) openModal(rows[Number(button.dataset.rumorUpdate)]);
+  });
+  fields.institution.addEventListener("input", renderMatches);
+  matchesBox.addEventListener("click", event => {
+    const button = event.target.closest("[data-rumor-switch]");
+    if (!button || submitting) return;
+    // Carry over the typed message; the status starts from the row's current one so the
+    // Add form's default ("Ad Posted") cannot silently downgrade an existing entry.
+    const draft = fields.rumor.value;
+    openModal(rows[Number(button.dataset.rumorSwitch)]);
+    fields.rumor.value = draft;
+    characterCount.textContent = `${fields.rumor.value.length} / 500`;
   });
   fields.rumor.addEventListener("input", () => { characterCount.textContent = `${fields.rumor.value.length} / 500`; });
   cancelButton.addEventListener("click", () => { if (!submitting) dialog.close(); });
