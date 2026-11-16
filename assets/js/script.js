@@ -48,8 +48,8 @@ const setActivePage = (pageName, shouldScroll = false) => {
 
 // Listen to Hash Changes for Routing
 const handleHashChange = (e) => {
-  let hash = window.location.hash.slice(1).toLowerCase();
-  try { hash = decodeURIComponent(hash); } catch { hash = ""; }
+  let hash = window.location.hash.slice(1);
+  try { hash = decodeURIComponent(hash).toLowerCase(); } catch { hash = ""; }
   const pageName = hash === "rumormill" ? "rumor mill" : hash.replace(/-/g, " ");
   // Only smooth scroll if triggered by user interaction (hashchange event), not initial load
   const isUserNavigation = e && e.type === "hashchange";
@@ -72,8 +72,13 @@ navigationLinks.forEach(link => {
 // 3. Light / Dark Theme Management
 const themeToggleButton = document.getElementById('theme-toggle-btn');
 
+const getStoredTheme = () => {
+  try { return localStorage.getItem('theme'); } catch { return null; }
+};
+let sessionTheme = null;
+
 const getPreferredTheme = () => {
-  const savedTheme = localStorage.getItem('theme');
+  const savedTheme = sessionTheme || getStoredTheme();
   if (savedTheme) return savedTheme;
   return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
 };
@@ -82,18 +87,23 @@ const applyTheme = (theme) => {
   document.documentElement.classList.toggle('light-theme', theme === 'light');
 };
 
+// The inline <head> script applies the theme early to avoid a flash, but it can be
+// blocked (CSP hash mismatch, script rewriting, storage errors). Apply it again here.
+applyTheme(getPreferredTheme());
+
 if (themeToggleButton) {
   themeToggleButton.addEventListener('click', () => {
     const isCurrentlyLight = document.documentElement.classList.contains('light-theme');
     const nextTheme = isCurrentlyLight ? 'dark' : 'light';
+    sessionTheme = nextTheme;
     applyTheme(nextTheme);
-    localStorage.setItem('theme', nextTheme);
+    try { localStorage.setItem('theme', nextTheme); } catch { /* Theme still works for this visit. */ }
   });
 }
 
 // Listen for system theme changes if user hasn't set manual preference
 window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', (e) => {
-  if (!localStorage.getItem('theme')) {
+  if (!sessionTheme && !getStoredTheme()) {
     applyTheme(e.matches ? 'light' : 'dark');
   }
 });
@@ -130,7 +140,7 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
   const statusFilter = document.getElementById("rumor-status-filter");
   const searchInput = document.getElementById("rumor-search");
   const refreshButton = document.getElementById("rumor-refresh");
-  const sortButton = document.getElementById("rumor-sort-updated");
+  const sortButtons = document.querySelectorAll("[data-rumor-sort]");
   const feedback = document.getElementById("rumor-feedback");
   const count = document.getElementById("rumor-count");
   const dialog = document.getElementById("rumor-dialog");
@@ -142,11 +152,12 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
   const characterCount = document.getElementById("rumor-character-count");
   let rows = [];
   let categoryFilter = "All";
-  let newestFirst = true;
+  let sortKey = "updated";
+  let sortDirection = "descending";
   let editingRow = null;
   let submitting = false;
   let loading = false;
-  let requestVersion = 0;
+  let pendingLoad = Promise.resolve();
 
   // These are fictional UI examples, never claims about the named institutions.
   const demoRows = [
@@ -178,17 +189,28 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
 
   const safeJobUrl = value => {
     try {
-      const url = new URL(String(value).trim());
-      return ["http:", "https:"].includes(url.protocol) ? url.href : "";
+      const text = String(value).trim();
+      if (/[\s\u0000-\u001f\u007f-\u009f\\]/.test(text)) return "";
+      if (!/^https?:\/\/[^/?#@]+(?:[/?#]|$)/i.test(text)) return "";
+      const url = new URL(text);
+      if (!url.hostname.startsWith("[") && !url.hostname.replace(/\.$/, "").split(".").every(label =>
+        /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/i.test(label))) return "";
+      return ["http:", "https:"].includes(url.protocol) && !url.username && !url.password ? url.href : "";
     } catch { return ""; }
   };
 
-  const dateOnly = value => /^\d{4}-\d{2}-\d{2}(?:T.*)?$/.test(String(value)) ? String(value).slice(0, 10) : "";
+  const dateOnly = value => {
+    if (!/^\d{4}-\d{2}-\d{2}(?:T.*)?$/.test(String(value))) return "";
+    const date = String(value).slice(0, 10);
+    const parsed = new Date(`${date}T00:00:00Z`);
+    return !isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === date ? date : "";
+  };
   const normalizeRow = row => {
     if (!row || typeof row !== "object") throw new Error("Invalid row from the tracker.");
     const read = (key, header) => String(row[key] ?? row[header] ?? "").trim();
     const result = {
-      institution: read("institution", "Institution"), category: read("category", "Category"),
+      institution: read("institution", "Institution"),
+      category: categories.find(category => category.toLowerCase() === read("category", "Category").toLowerCase()),
       deadline: dateOnly(read("deadline", "Deadline")), jobUrl: safeJobUrl(read("jobUrl", "JobUrl")),
       status: read("status", "Status"), rumors: read("rumors", "Rumors"), updated: dateOnly(read("updated", "Updated"))
     };
@@ -201,16 +223,54 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
     element.dataset.state = state;
   };
 
+  const sortOptions = {
+    institution: { label: "Institution / Position", ascending: "A to Z", descending: "Z to A" },
+    category: { label: "Category", ascending: "A to Z", descending: "Z to A" },
+    deadline: { label: "Deadline", ascending: "earliest first", descending: "latest first" },
+    status: { label: "Current Status", ascending: "earliest hiring stage first", descending: "latest hiring stage first" },
+    rumors: { label: "Rumors & Dated Log", ascending: "by first report, earliest first", descending: "by first report, latest first" },
+    updated: { label: "Last Updated", ascending: "earliest first", descending: "latest first" }
+  };
+  const compareText = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" }).compare;
+  // The log column sorts by the date of its first entry ("[YYYY-MM-DD] ..."), i.e. when the
+  // job was first reported; sorting the raw text would order by that date anyway, but opaquely.
+  const firstReported = rumors => dateOnly((/^\[(\d{4}-\d{2}-\d{2})\]/.exec(rumors) || [])[1] || "");
+  const sortValue = row => sortKey === "rumors" ? firstReported(row.rumors) : row[sortKey];
+  const compareRows = (a, b) => {
+    const left = sortValue(a.row);
+    const right = sortValue(b.row);
+    const leftMissing = !left || (sortKey === "status" && !statuses.includes(left));
+    const rightMissing = !right || (sortKey === "status" && !statuses.includes(right));
+    if (leftMissing !== rightMissing) return leftMissing ? 1 : -1;
+    const order = leftMissing ? 0 : sortKey === "status"
+      ? statuses.indexOf(left) - statuses.indexOf(right)
+      : compareText(left, right);
+    return (sortDirection === "descending" ? -order : order) ||
+      compareText(a.row.institution, b.row.institution) ||
+      compareText(a.row.category, b.row.category) || a.index - b.index;
+  };
+  const updateSortHeaders = () => {
+    sortButtons.forEach(button => {
+      const key = button.dataset.rumorSort;
+      const option = sortOptions[key];
+      const active = key === sortKey;
+      const nextDirection = active && sortDirection === "ascending" ? "descending" : "ascending";
+      const heading = button.closest("th");
+      if (active) heading.setAttribute("aria-sort", sortDirection);
+      else heading.removeAttribute("aria-sort");
+      button.textContent = `${option.label} ${active ? sortDirection === "ascending" ? "↑" : "↓" : "↕"}`;
+      button.setAttribute("aria-label", `${option.label}. Sort ${option[nextDirection]}`);
+      button.setAttribute("title", `Sort ${option[nextDirection]}`);
+    });
+  };
+
   const renderRows = () => {
     const query = searchInput.value.trim().toLowerCase();
     const visibleRows = rows.map((row, index) => ({ row, index })).filter(({ row }) =>
       (categoryFilter === "All" || row.category === categoryFilter) &&
       (!statusFilter.value || row.status === statusFilter.value) &&
       [row.institution, row.status, row.rumors].some(value => value.toLowerCase().includes(query))
-    ).sort((a, b) => {
-      const dateOrder = a.row.updated.localeCompare(b.row.updated);
-      return (newestFirst ? -dateOrder : dateOrder) || a.row.institution.localeCompare(b.row.institution);
-    });
+    ).sort(compareRows);
 
     count.textContent = `${visibleRows.length} of ${rows.length} ${rows.length === 1 ? "position" : "positions"}`;
     if (!visibleRows.length) {
@@ -244,9 +304,7 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
     } finally { clearTimeout(timeout); }
   };
 
-  const loadRows = async () => {
-    if (loading || submitting) return;
-    const version = ++requestVersion;
+  const fetchRows = async () => {
     loading = true;
     refreshButton.disabled = true;
     tableBody.setAttribute("aria-busy", "true");
@@ -257,22 +315,34 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
         if (!rows.length) rows = demoRows.map(row => ({ ...row }));
       } else {
         const data = await requestApi();
-        if (version !== requestVersion) return;
         if (!Array.isArray(data)) throw new Error("The tracker did not return a list of positions.");
-        rows = data.map(normalizeRow);
+        const validRows = [];
+        data.forEach(row => {
+          try { validRows.push(normalizeRow(row)); } catch { /* Keep usable entries from a partial import. */ }
+        });
+        if (data.length && !validRows.length) throw new Error("No valid positions were returned.");
+        rows = validRows;
+        if (validRows.length < data.length) {
+          showMessage(feedback, "Some entries could not be displayed. Please contact the site owner.", "error");
+          return;
+        }
       }
       showMessage(feedback, demoMode ? "Demo ready. Changes stay in this tab until you reload." : "Tracker refreshed.");
     } catch {
-      if (version !== requestVersion) return;
       showMessage(feedback, "Could not load the tracker. Please try Refresh. Any previously loaded entries are still shown.", "error");
     } finally {
-      if (version === requestVersion) {
-        loading = false;
-        refreshButton.disabled = false;
-        tableBody.setAttribute("aria-busy", "false");
-        renderRows();
-      }
+      loading = false;
+      refreshButton.disabled = submitting;
+      tableBody.setAttribute("aria-busy", "false");
+      renderRows();
+      renderMatches();
     }
+  };
+
+  const loadRows = () => {
+    if (loading || submitting) return pendingLoad;
+    pendingLoad = fetchRows();
+    return pendingLoad;
   };
 
   // Steer "Add New Job" toward existing rows: loose name matching for suggestions only
@@ -333,13 +403,13 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
   statusFilter.addEventListener("change", renderRows);
   searchInput.addEventListener("input", renderRows);
   refreshButton.addEventListener("click", loadRows);
-  sortButton.addEventListener("click", () => {
-    newestFirst = !newestFirst;
-    document.getElementById("rumor-updated-heading").setAttribute("aria-sort", newestFirst ? "descending" : "ascending");
-    sortButton.textContent = `Last Updated ${newestFirst ? "↓" : "↑"}`;
-    sortButton.setAttribute("aria-label", `Last Updated, ${newestFirst ? "newest" : "oldest"} first. Reverse sort order`);
+  sortButtons.forEach(button => button.addEventListener("click", () => {
+    const key = button.dataset.rumorSort;
+    sortDirection = key === sortKey && sortDirection === "ascending" ? "descending" : "ascending";
+    sortKey = key;
+    updateSortHeaders();
     renderRows();
-  });
+  }));
   document.getElementById("rumor-add").addEventListener("click", () => openModal());
   tableBody.addEventListener("click", event => {
     const button = event.target.closest("[data-rumor-update]");
@@ -383,20 +453,20 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
       showMessage(formFeedback, "Use a valid http:// or https:// job ad URL (up to 2048 characters).", "error");
       return;
     }
-    if (payload.deadline && !/^\d{4}-\d{2}-\d{2}$/.test(payload.deadline)) {
+    if (payload.deadline && (payload.deadline.length !== 10 || !dateOnly(payload.deadline))) {
       showMessage(formFeedback, "Use a deadline in YYYY-MM-DD format.", "error");
       return;
     }
 
     submitting = true;
-    ++requestVersion; // An older GET must not replace the result of this submission.
-    loading = false;
-    tableBody.setAttribute("aria-busy", "false");
     submitButton.disabled = cancelButton.disabled = refreshButton.disabled = true;
     submitButton.textContent = "Submitting...";
     showMessage(formFeedback, "");
     let confirmed = false;
     try {
+      // Finish an in-flight load before writing, so its other positions are preserved.
+      // fetchRows handles its own errors, so a failed load does not prevent posting.
+      if (loading) await pendingLoad;
       let savedRow;
       if (demoMode) {
         const existing = rows.find(row => rowKey(row) === rowKey(payload));
@@ -442,5 +512,6 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
   });
 
   document.getElementById("rumor-demo-notice").hidden = !demoMode;
+  updateSortHeaders();
   loadRows();
 })();

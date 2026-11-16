@@ -1145,7 +1145,7 @@ main {
 }
 
 .rumor-table thead th:nth-child(1) { width: 190px; }
-.rumor-table thead th:nth-child(2) { width: 85px; }
+.rumor-table thead th:nth-child(2) { width: 100px; }
 .rumor-table thead th:nth-child(3) { width: 110px; }
 .rumor-table thead th:nth-child(4) { width: 145px; }
 .rumor-table thead th:nth-child(5) { width: 325px; }
@@ -1161,12 +1161,16 @@ main {
   background: var(--bg-gradient-jet);
 }
 
-#rumor-sort-updated {
+.rumor-sort-button {
+  width: 100%;
+  min-height: 32px;
+  white-space: nowrap;
   color: var(--light-gray);
-  font-size: inherit;
+  font: inherit;
 }
 
-#rumor-sort-updated:hover {
+.rumor-sort-button:hover,
+.rumor-table th[aria-sort] .rumor-sort-button {
   color: var(--orange-yellow-crayola);
 }
 

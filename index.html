@@ -1494,21 +1494,21 @@
         </section>
 
         <p id="rumor-feedback" class="rumor-feedback" role="status" aria-live="polite"></p>
-        <p id="rumor-table-help" class="rumor-table-help">Sort with Last Updated. Scroll the table horizontally to see
-          all columns.</p>
+        <p id="rumor-table-help" class="rumor-table-help">Click a column heading to sort; click again to reverse.
+          Scroll the table horizontally to see all columns.</p>
         <div class="rumor-table-container has-scrollbar" role="region" aria-label="Astronomy job rumors"
           aria-describedby="rumor-table-help" tabindex="0">
           <table class="rumor-table">
             <caption class="rumor-sr-only">2026–2027 astronomy jobs and anonymous, unverified updates</caption>
             <thead>
               <tr>
-                <th scope="col">Institution / Position</th>
-                <th scope="col">Category</th>
-                <th scope="col">Deadline</th>
-                <th scope="col">Current Status</th>
-                <th scope="col">Rumors &amp; Dated Log</th>
+                <th scope="col"><button type="button" class="rumor-sort-button" data-rumor-sort="institution">Institution / Position ↕</button></th>
+                <th scope="col"><button type="button" class="rumor-sort-button" data-rumor-sort="category">Category ↕</button></th>
+                <th scope="col"><button type="button" class="rumor-sort-button" data-rumor-sort="deadline">Deadline ↕</button></th>
+                <th scope="col"><button type="button" class="rumor-sort-button" data-rumor-sort="status">Current Status ↕</button></th>
+                <th scope="col"><button type="button" class="rumor-sort-button" data-rumor-sort="rumors">Rumors &amp; Dated Log ↕</button></th>
                 <th scope="col" id="rumor-updated-heading" aria-sort="descending">
-                  <button type="button" id="rumor-sort-updated" title="Sort by last updated">Last Updated ↓</button>
+                  <button type="button" id="rumor-sort-updated" class="rumor-sort-button" data-rumor-sort="updated">Last Updated ↓</button>
                 </th>
                 <th scope="col">Action</th>
               </tr>

@@ -103,9 +103,13 @@ function readRows_(sheet) {
 }
 
 function rowToObject_(row, timezone) {
+  const storedCategory = String(row[1] == null ? '' : row[1]);
+  const category = RUMOR_CATEGORIES.find(function (value) {
+    return value.toLowerCase() === storedCategory.trim().toLowerCase();
+  });
   return {
     institution: String(row[0] == null ? '' : row[0]),
-    category: String(row[1] == null ? '' : row[1]),
+    category: category || storedCategory,
     deadline: dateString_(row[2], timezone),
     jobUrl: String(row[3] == null ? '' : row[3]),
     status: String(row[4] == null ? '' : row[4]),
@@ -151,10 +155,59 @@ function parseSubmission_(e) {
       throw publicError_('Deadline must be a valid date in YYYY-MM-DD format.');
     }
   }
-  if (submission.jobUrl && !/^https?:\/\/[^\s/?#]+(?:[/?#][^\s]*)?$/i.test(submission.jobUrl)) {
-    throw publicError_('Job URL must begin with http:// or https:// and contain no spaces.');
+  if (submission.jobUrl && !validJobUrl_(submission.jobUrl)) {
+    throw publicError_('Use a valid http:// or https:// job URL without spaces, control characters, or embedded credentials.');
   }
   return submission;
+}
+
+function validJobUrl_(value) {
+  // Apps Script has no browser URL constructor. Validate the URL's structure
+  // locally; no requests are made to submitted hosts.
+  if (/[\s\u0000-\u001f\u007f-\u009f\\]/.test(value)) return false;
+  const match = /^https?:\/\/([^/?#]+)(?:[/?#].*)?$/i.exec(value);
+  if (!match || match[1].indexOf('@') !== -1) return false;
+  const authority = match[1];
+  let host;
+  let port;
+  if (authority.charAt(0) === '[') {
+    const ipv6 = /^\[([0-9a-f:.]+)\](?::(\d+))?$/i.exec(authority);
+    if (!ipv6 || !validIpv6_(ipv6[1])) return false;
+    port = ipv6[2];
+  } else {
+    const hostname = /^([^:]+)(?::(\d+))?$/.exec(authority);
+    if (!hostname) return false;
+    host = hostname[1].replace(/[\u3002\uff0e\uff61]/g, '.').replace(/\.$/, '');
+    port = hostname[2];
+    // Preserve Unicode/IDN labels while excluding invalid ASCII host syntax.
+    const labels = host.split('.');
+    if (!labels.every(function (label) {
+      return /^[a-z0-9\u00a0-\uffff](?:[a-z0-9\u00a0-\uffff-]*[a-z0-9\u00a0-\uffff])?$/i.test(label);
+    })) return false;
+    if (/^\d+(?:\.\d+){3}$/.test(host) && !validIpv4_(host)) return false;
+  }
+  return port === undefined || Number(port) <= 65535;
+}
+
+function validIpv4_(address) {
+  const octets = address.split('.');
+  return octets.length === 4 && octets.every(function (octet) {
+    return /^\d{1,3}$/.test(octet) && Number(octet) <= 255;
+  });
+}
+
+function validIpv6_(address) {
+  const ipv4 = /(^|:)(\d+\.\d+\.\d+\.\d+)$/.exec(address);
+  if (ipv4) {
+    if (!validIpv4_(ipv4[2])) return false;
+    address = address.slice(0, -ipv4[2].length) + '0:0';
+  }
+  const halves = address.split('::');
+  if (halves.length > 2) return false;
+  const groups = halves.filter(Boolean).join(':').split(':').filter(Boolean);
+  if (!groups.every(function (group) { return /^[0-9a-f]{1,4}$/i.test(group); })) return false;
+  if (halves.length === 1) return groups.length === 8 && !/^:|:$/.test(address);
+  return groups.length < 8 && !/(^:[^:]|[^:]:$|:::)/.test(address);
 }
 
 function textField_(value, label, limit, required) {
