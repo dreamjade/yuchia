@@ -157,6 +157,7 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
   let editingRow = null;
   let submitting = false;
   let loading = false;
+  let loadFailed = false; // Last load failed; an empty table means "unknown", not "no jobs".
   let pendingLoad = Promise.resolve();
 
   // These are fictional UI examples, never claims about the named institutions.
@@ -232,7 +233,9 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
     if (demoMode) return;
     try { localStorage.setItem(cacheKey, JSON.stringify({ savedAt: Date.now(), rows })); } catch { /* Storage full or blocked. */ }
   };
-  const rowKey = row => `${row.institution.trim().toLowerCase()}\u0000${row.category.toLowerCase()}`;
+  // Same normalization as the server: whitespace runs (incl. line breaks) become one space.
+  const singleLine = value => String(value ?? "").replace(/\s+/g, " ").trim();
+  const rowKey = row => `${singleLine(row.institution).toLowerCase()}\u0000${row.category.toLowerCase()}`;
   const showMessage = (element, message, state = "") => {
     element.textContent = message;
     element.dataset.state = state;
@@ -289,7 +292,8 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
 
     count.textContent = `${visibleRows.length} of ${rows.length} ${rows.length === 1 ? "position" : "positions"}`;
     if (!visibleRows.length) {
-      const message = loading ? "Loading the latest rumors…" : rows.length ? "No positions match these filters." : "No positions yet. Add the first job or rumor.";
+      const message = loading ? "Loading the latest rumors…" : rows.length ? "No positions match these filters."
+        : loadFailed ? "The tracker could not be loaded right now. Please try Refresh before adding a job." : "No positions yet. Add the first job or rumor.";
       tableBody.innerHTML = `<tr><td class="rumor-empty" colspan="7">${message}</td></tr>`;
       return;
     }
@@ -328,6 +332,7 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
     try {
       if (demoMode) {
         if (!rows.length) rows = demoRows.map(row => ({ ...row }));
+        loadFailed = false;
       } else {
         const data = await requestApi();
         if (!Array.isArray(data)) throw new Error("The tracker did not return a list of positions.");
@@ -337,6 +342,7 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
         });
         if (data.length && !validRows.length) throw new Error("No valid positions were returned.");
         rows = validRows;
+        loadFailed = false;
         saveCachedRows();
         if (validRows.length < data.length) {
           showMessage(feedback, "Some entries could not be displayed. Please contact the site owner.", "error");
@@ -345,6 +351,7 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
       }
       showMessage(feedback, demoMode ? "Demo ready. Changes stay in this tab until you reload." : "Tracker refreshed.");
     } catch {
+      loadFailed = true;
       showMessage(feedback, "Could not load the tracker. Please try Refresh. Any previously loaded entries are still shown.", "error");
     } finally {
       loading = false;
@@ -451,9 +458,9 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
     event.preventDefault();
     if (submitting || !form.reportValidity()) return;
     const payload = {
-      institution: fields.institution.value.trim(), category: fields.category.value,
+      institution: singleLine(fields.institution.value), category: fields.category.value,
       deadline: fields.deadline.value, jobUrl: fields.jobUrl.value.trim(),
-      status: fields.status.value, rumor: fields.rumor.value.trim(), website: fields.website.value
+      status: fields.status.value, rumor: singleLine(fields.rumor.value), website: fields.website.value
     };
     // Use the actual row identity even if a disabled/read-only form control is altered.
     if (editingRow) ["institution", "category", "deadline", "jobUrl"].forEach(name => { payload[name] = editingRow[name]; });

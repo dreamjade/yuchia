@@ -53,7 +53,7 @@ function doPost(e) {
     const logLine = '[' + today + '] ' + body.rumor;
     const rows = readRows_(sheet);
     const matchIndex = rows.findIndex(function (row) {
-      return String(row[0]).trim().toLowerCase() === body.institution.toLowerCase() &&
+      return singleLine_(row[0]).toLowerCase() === body.institution.toLowerCase() &&
         String(row[1]).trim().toLowerCase() === body.category.toLowerCase();
     });
 
@@ -221,12 +221,13 @@ function parseSubmission_(e) {
   if (body.website != null && body.website !== '') throw publicError_('Submission rejected.');
 
   const submission = {
-    institution: textField_(body.institution, 'Institution', 200, true),
+    institution: singleLineField_(body.institution, 'Institution', 200, true),
     category: textField_(body.category, 'Category', 20, true),
     deadline: textField_(body.deadline, 'Deadline', 10, false),
     jobUrl: textField_(body.jobUrl, 'Job URL', 2048, false),
     status: textField_(body.status, 'Status', 40, true),
-    rumor: textField_(body.rumor, 'Rumor', 500, true)
+    // One line per update: a newline could otherwise forge an extra "[date] ..." log entry.
+    rumor: singleLineField_(body.rumor, 'Rumor', 500, true)
   };
   if (RUMOR_CATEGORIES.indexOf(submission.category) === -1) throw publicError_('Choose Postdoc or Faculty.');
   if (RUMOR_STATUSES.indexOf(submission.status) === -1) throw publicError_('Choose a valid status.');
@@ -299,6 +300,16 @@ function textField_(value, label, limit, required) {
   if (required && !text) throw publicError_(label + ' is required.');
   if (text.length > limit) throw publicError_(label + ' must be at most ' + limit + ' characters.');
   return text;
+}
+
+/** Collapses runs of whitespace (including line breaks) to single spaces and trims. */
+function singleLine_(value) {
+  return String(value == null ? '' : value).replace(/\s+/g, ' ').trim();
+}
+
+function singleLineField_(value, label, limit, required) {
+  if (typeof value === 'string') value = singleLine_(value);
+  return textField_(value, label, limit, required);
 }
 
 function sheetLiteral_(value) {
