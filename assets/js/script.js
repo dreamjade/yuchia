@@ -19,7 +19,7 @@ const pageNameForLink = link => link.innerHTML.trim().toLowerCase();
 const hashForPage = pageName => `#${pageName.replace(/\s+/g, "-")}`;
 
 const setActivePage = (pageName, shouldScroll = false) => {
-  const targetPageName = validPageNames.includes(pageName) ? pageName : "about";
+  const targetPageName = validPageNames.includes(pageName) ? pageName : validPageNames[0];
 
   // Hide the personal sidebar on the anonymous Rumor Mill page
   document.body.classList.toggle("rumor-mill-mode", targetPageName === "rumor mill");
@@ -51,6 +51,11 @@ const handleHashChange = (e) => {
   let hash = window.location.hash.slice(1);
   try { hash = decodeURIComponent(hash).toLowerCase(); } catch { hash = ""; }
   const pageName = hash === "rumormill" ? "rumor mill" : hash.replace(/-/g, " ");
+  // The Rumor Mill moved to its own indexable page; keep old /#rumor-mill links working.
+  if (pageName === "rumor mill" && !validPageNames.includes(pageName)) {
+    window.location.replace("/rumor-mill");
+    return;
+  }
   // Only smooth scroll if triggered by user interaction (hashchange event), not initial load
   const isUserNavigation = e && e.type === "hashchange";
   setActivePage(pageName, isUserNavigation);

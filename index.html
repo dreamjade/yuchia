@@ -26,9 +26,6 @@
   <!-- Google Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <!-- Rumor Mill API: Apps Script answers via a redirect to googleusercontent.com -->
-  <link rel="preconnect" href="https://script.google.com" crossorigin>
-  <link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 
@@ -144,7 +141,7 @@
           <li class="navbar-item">
             <button class="navbar-link" data-nav-link data-target="hice">HICE</button>
           </li>
-          <li class="navbar-item"><button class="navbar-link" data-nav-link>Rumor Mill</button></li>
+          <li class="navbar-item"><a class="navbar-link" href="/rumor-mill">Rumor Mill</a></li>
         </ul>
       </nav>
 
@@ -1430,174 +1427,9 @@
 
       </article>
 
-      <!-- #RUMOR-MILL -->
-      <article class="rumor-mill" data-page="rumor mill">
-        <header>
-          <p class="rumor-eyebrow">Community job tracker</p>
-          <h2 class="h2 article-title">Astro Rumor Mill (2026–2027)</h2>
-        </header>
-
-        <aside class="rumor-disclaimer" aria-label="Community disclaimer">
-          <ion-icon name="information-circle-outline" aria-hidden="true"></ion-icon>
-          <p>An anonymous, community-run tracker for the 2026–2027 Astronomy &amp; Astrophysics job market. Anonymous
-            rumors are unverified; check official job ads for details.
-            Please protect your mental health, take breaks, and avoid sharing applicants’ names or personal information.
-          </p>
-        </aside>
-
-        <p id="rumor-demo-notice" class="rumor-demo-notice" hidden>
-          <strong>Demo mode.</strong> These are fictional examples, including all dates and statuses.
-          Your submissions stay in memory in this tab and reset when you reload.
-        </p>
-
-        <section class="rumor-controls" aria-label="Filter jobs and submit a rumor">
-          <div id="rumor-category-filters" class="rumor-category-filters" role="group" aria-label="Job category">
-            <button type="button" class="rumor-filter-pill active" data-rumor-category="All"
-              aria-pressed="true">All</button>
-            <button type="button" class="rumor-filter-pill" data-rumor-category="Postdoc" aria-pressed="false">Postdoc /
-              Fellowship</button>
-            <button type="button" class="rumor-filter-pill" data-rumor-category="Faculty" aria-pressed="false">Faculty /
-              Staff</button>
-          </div>
-
-          <div class="rumor-filter-bar">
-            <label class="rumor-field rumor-status-field" for="rumor-status-filter">
-              <span>Status</span>
-              <select id="rumor-status-filter">
-                <option value="">All Statuses</option>
-                <option>Ad Posted</option>
-                <option>Shortlist / Reference Req</option>
-                <option>Interviews</option>
-                <option>Offer Made</option>
-                <option>Offer Accepted</option>
-              </select>
-            </label>
-            <label class="rumor-field rumor-search-field" for="rumor-search">
-              <span>Search the mill</span>
-              <input type="search" id="rumor-search" placeholder="Institution, fellowship, status, or rumor…"
-                autocomplete="off">
-            </label>
-          </div>
-
-          <div class="rumor-toolbar">
-            <p id="rumor-count" class="rumor-count" aria-live="polite"></p>
-            <div class="rumor-actions">
-              <button type="button" id="rumor-refresh" class="rumor-button">
-                <ion-icon name="refresh-outline" aria-hidden="true"></ion-icon>Refresh
-              </button>
-              <button type="button" id="rumor-add" class="rumor-button rumor-button-primary">
-                <ion-icon name="add-circle-outline" aria-hidden="true"></ion-icon>Add New Job
-              </button>
-            </div>
-          </div>
-          <p class="rumor-add-hint">
-            <strong>Job already listed?</strong> Search for it and use <span class="rumor-hint-chip">+ Update</span> on
-            its row so the news joins its log. Use <strong>Add New Job</strong> only for positions not in the tracker yet.
-          </p>
-        </section>
-
-        <p id="rumor-feedback" class="rumor-feedback" role="status" aria-live="polite"></p>
-        <p id="rumor-table-help" class="rumor-table-help">Click a column heading to sort; click again to reverse.
-          Scroll the table horizontally to see all columns.</p>
-        <div class="rumor-table-container has-scrollbar" role="region" aria-label="Astronomy job rumors"
-          aria-describedby="rumor-table-help" tabindex="0">
-          <table class="rumor-table">
-            <caption class="rumor-sr-only">2026–2027 astronomy jobs and anonymous, unverified updates</caption>
-            <thead>
-              <tr>
-                <th scope="col"><button type="button" class="rumor-sort-button" data-rumor-sort="institution">Institution / Position ↕</button></th>
-                <th scope="col"><button type="button" class="rumor-sort-button" data-rumor-sort="category">Category ↕</button></th>
-                <th scope="col"><button type="button" class="rumor-sort-button" data-rumor-sort="deadline">Deadline ↕</button></th>
-                <th scope="col"><button type="button" class="rumor-sort-button" data-rumor-sort="status">Current Status ↕</button></th>
-                <th scope="col"><button type="button" class="rumor-sort-button" data-rumor-sort="rumors">Rumors &amp; Dated Log ↕</button></th>
-                <th scope="col" id="rumor-updated-heading" aria-sort="descending">
-                  <button type="button" id="rumor-sort-updated" class="rumor-sort-button" data-rumor-sort="updated">Last Updated ↓</button>
-                </th>
-                <th scope="col">Action</th>
-              </tr>
-            </thead>
-            <tbody id="rumor-table-body">
-              <tr>
-                <td colspan="7" class="rumor-empty">Loading rumors…</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <noscript>
-          <p class="rumor-feedback">Enable JavaScript to view and contribute to the Rumor Mill.</p>
-        </noscript>
-      </article>
-
     </div>
 
   </main>
-
-  <dialog id="rumor-dialog" class="rumor-dialog" aria-labelledby="rumor-modal-title"
-    aria-describedby="rumor-modal-description">
-    <form id="rumor-form" class="rumor-form">
-      <header>
-        <p class="rumor-eyebrow">Contribute to the community</p>
-        <h2 id="rumor-modal-title">Add a new job</h2>
-        <p id="rumor-modal-description">Share a brief update without names or personal information. Required fields are
-          marked *.</p>
-      </header>
-
-      <label class="rumor-field" for="rumor-institution">
-        <span>Institution / Fellowship / Position *</span>
-        <input id="rumor-institution" name="institution" type="text" maxlength="200" required
-          placeholder="e.g., NASA Hubble Fellowship" autocomplete="off" aria-describedby="rumor-matches">
-      </label>
-      <div id="rumor-matches" class="rumor-matches" aria-live="polite" hidden></div>
-
-      <div class="rumor-form-row">
-        <label class="rumor-field" for="rumor-category">
-          <span>Category *</span>
-          <select id="rumor-category" name="category" required>
-            <option value="Postdoc">Postdoc</option>
-            <option value="Faculty">Faculty</option>
-          </select>
-        </label>
-        <label class="rumor-field" for="rumor-deadline">
-          <span>Deadline <small>(optional)</small></span>
-          <input id="rumor-deadline" name="deadline" type="date">
-        </label>
-      </div>
-
-      <label class="rumor-field" for="rumor-jobUrl">
-        <span>Job ad URL <small>(optional)</small></span>
-        <input id="rumor-jobUrl" name="jobUrl" type="url" maxlength="2048" placeholder="https://jobregister.aas.org/…">
-      </label>
-
-      <label class="rumor-field" for="rumor-status">
-        <span>Current status *</span>
-        <select id="rumor-status" name="status" required>
-          <option>Ad Posted</option>
-          <option>Shortlist / Reference Req</option>
-          <option>Interviews</option>
-          <option>Offer Made</option>
-          <option>Offer Accepted</option>
-        </select>
-      </label>
-
-      <label class="rumor-field" for="rumor-rumor">
-        <span>Rumor / Update *</span>
-        <textarea id="rumor-rumor" name="rumor" rows="4" maxlength="500" required
-          placeholder="e.g., Zoom interviews sent out" aria-describedby="rumor-character-count"></textarea>
-      </label>
-      <p id="rumor-character-count" class="rumor-character-count">0 / 500 characters</p>
-
-      <div class="rumor-honeypot" aria-hidden="true" inert>
-        <label for="rumor-website">Leave this field blank</label>
-        <input id="rumor-website" name="website" type="text" tabindex="-1" autocomplete="off">
-      </div>
-
-      <p id="rumor-form-feedback" class="rumor-feedback" role="alert"></p>
-      <div class="rumor-form-actions">
-        <button id="rumor-cancel" type="button" class="rumor-button">Cancel</button>
-        <button id="rumor-submit" type="submit" class="rumor-button rumor-button-primary">Post Anonymously</button>
-      </div>
-    </form>
-  </dialog>
 
   <!-- Custom JS -->
   <script src="./assets/js/script.js"></script>
