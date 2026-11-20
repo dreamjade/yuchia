@@ -86,7 +86,7 @@
       <article class="rumor-mill active" data-page="rumor mill">
         <header>
           <p class="rumor-eyebrow">Community job tracker</p>
-          <h2 class="h2 article-title">Astro Rumor Mill (2026–2027)</h2>
+          <h1 class="h2 article-title">Astro Rumor Mill (2026–2027)</h1>
         </header>
 
         <aside class="rumor-disclaimer" aria-label="Community disclaimer">
@@ -97,10 +97,9 @@
           </p>
         </aside>
 
-        <p id="rumor-demo-notice" class="rumor-demo-notice" hidden>
-          <strong>Demo mode.</strong> These are fictional examples, including all dates and statuses.
-          Your submissions stay in memory in this tab and reset when you reload.
-        </p>
+        <!-- Demo-mode notice is added by script.js only when no API is configured, so crawlers
+             reading the raw HTML never see "demo" wording on the live tracker. -->
+        <p id="rumor-demo-notice" class="rumor-demo-notice" hidden></p>
 
         <section class="rumor-controls" aria-label="Filter jobs and submit a rumor">
           <div id="rumor-category-filters" class="rumor-category-filters" role="group" aria-label="Job category">
@@ -176,7 +175,8 @@
           </table>
         </div>
         <noscript>
-          <p class="rumor-feedback">Enable JavaScript to view and contribute to the Rumor Mill.</p>
+          <p class="rumor-feedback">This live tracker loads its job list from a shared spreadsheet. Enable JavaScript to
+            view and contribute to the Rumor Mill.</p>
         </noscript>
       </article>
 

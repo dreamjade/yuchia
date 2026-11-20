@@ -540,7 +540,12 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
     }
   });
 
-  document.getElementById("rumor-demo-notice").hidden = !demoMode;
+  const demoNotice = document.getElementById("rumor-demo-notice");
+  if (demoNotice && demoMode) {
+    demoNotice.innerHTML = "<strong>Demo mode.</strong> These are fictional examples, including all dates and statuses. " +
+      "Your submissions stay in memory in this tab and reset when you reload.";
+    demoNotice.hidden = false;
+  }
   updateSortHeaders();
   if (!demoMode) rows = readCachedRows();
   loadRows();
