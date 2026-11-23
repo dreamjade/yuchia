@@ -343,8 +343,8 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
     const reported = readReported();
     return entryLines(row).map((line, position) => {
       const control = reported.includes(entryId(row, line))
-        ? `<span class="rumor-muted rumor-reported">Reported</span>`
-        : `<button type="button" class="rumor-entry-report" data-rumor-report="${index}" data-rumor-entry="${position}" aria-label="Report this entry for ${escapeHtml(row.institution)}">Report</button>`;
+        ? `<span class="rumor-reported" title="You reported this entry"><ion-icon name="checkmark-outline" aria-label="Reported"></ion-icon></span>`
+        : `<button type="button" class="rumor-entry-report" data-rumor-report="${index}" data-rumor-entry="${position}" aria-label="Report this entry for ${escapeHtml(row.institution)}" title="Report this entry"><ion-icon name="flag-outline" aria-hidden="true"></ion-icon></button>`;
       return `<div class="rumor-entry"><span>${escapeHtml(line)}</span> ${control}</div>`;
     }).join("");
   };
@@ -661,7 +661,10 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({
             action: "report", institution: row.institution, category: row.category, entry,
-            reason: new FormData(reportForm).get("reason"), website: new FormData(reportForm).get("website") || ""
+            reason: new FormData(reportForm).get("reason"),
+            email: String(new FormData(reportForm).get("email") || "").trim(),
+            explanation: String(new FormData(reportForm).get("explanation") || "").trim(),
+            website: new FormData(reportForm).get("website") || ""
           })
         });
         if (!result || result.success !== true) throw new Error(result?.error || "The report could not be recorded.");

@@ -95,7 +95,7 @@
             rumors are unverified; check official job ads for details.
             Please protect your mental health, take breaks, and avoid sharing applicants’ names or personal information.
             Rumors are submitted by visitors and are not reviewed, verified or endorsed by the site owner. Use
-            <strong>Report</strong> on any entry that contains a name or personal information.
+            the flag icon that appears beside an entry when you point at it to report one that contains a name or personal information.
           </p>
         </aside>
 
@@ -287,7 +287,15 @@
         <label><input type="radio" name="reason" value="names" checked> Contains a name or personal information</label>
         <label><input type="radio" name="reason" value="remove"> Abusive, false, or should be removed</label>
       </fieldset>
-      <p class="rumor-table-help">Reports are anonymous and need no explanation.</p>
+      <label class="rumor-field" for="rumor-report-email">
+        <span>Your email *</span>
+        <input id="rumor-report-email" name="email" type="email" maxlength="200" required autocomplete="email" placeholder="you@example.com">
+      </label>
+      <label class="rumor-field" for="rumor-report-explanation">
+        <span>What is wrong with this entry? *</span>
+        <textarea id="rumor-report-explanation" name="explanation" rows="3" maxlength="500" required></textarea>
+      </label>
+      <p class="rumor-table-help">The email and explanation only help filter out automated reports. They are not saved, shared or answered, and the entry's author is never told who reported it.</p>
       <div class="rumor-honeypot" aria-hidden="true" inert>
         <label for="rumor-report-website">Leave this field blank</label>
         <input id="rumor-report-website" name="website" type="text" tabindex="-1" autocomplete="off">

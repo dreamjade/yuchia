@@ -1942,25 +1942,46 @@ body.rumor-modal-open {
   }
 }
 
+.rumor-entry {
+  position: relative;
+  padding-right: 24px;
+}
+
 .rumor-entry + .rumor-entry {
   margin-top: 4px;
 }
 
-.rumor-entry-report {
-  display: inline;
-  padding: 0 4px;
-  font-size: 11px;
+/* The report icon stays out of the way until you point at, or focus, an entry. */
+.rumor-entry-report,
+.rumor-reported {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: inline-flex;
+  padding: 2px 4px;
+  font-size: 13px;
   color: var(--light-gray-70);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.rumor-entry:hover .rumor-entry-report,
+.rumor-entry:hover .rumor-reported,
+.rumor-entry-report:focus-visible {
+  opacity: 1;
 }
 
 .rumor-entry-report:hover {
   color: var(--orange-yellow-crayola);
-  text-decoration: underline;
 }
 
-.rumor-reported {
-  font-size: 11px;
-  padding: 0 4px;
+/* Touch screens have no hover, so keep a faint icon there. */
+@media (hover: none) {
+  .rumor-entry-report,
+  .rumor-reported {
+    opacity: 0.45;
+    padding: 6px;
+  }
 }
 
 .rumor-report-reasons {
