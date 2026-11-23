@@ -143,6 +143,9 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
   const statuses = ["Ad Posted", "Shortlist / Reference Req", "Interviews", "Offer Made", "Offer Accepted"];
   const categoryButtons = document.querySelectorAll("[data-rumor-category]");
   const statusFilter = document.getElementById("rumor-status-filter");
+  const deadlineFilter = document.getElementById("rumor-deadline-filter");
+  const sortSelect = document.getElementById("rumor-sort-select");
+  const keepStatusOption = document.getElementById("rumor-status-keep");
   const searchInput = document.getElementById("rumor-search");
   const refreshButton = document.getElementById("rumor-refresh");
   const sortButtons = document.querySelectorAll("[data-rumor-sort]");
@@ -155,9 +158,17 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
   const cancelButton = document.getElementById("rumor-cancel");
   const formFeedback = document.getElementById("rumor-form-feedback");
   const characterCount = document.getElementById("rumor-character-count");
+  const reportDialog = document.getElementById("rumor-report-dialog");
+  const reportForm = document.getElementById("rumor-report-form");
+  const reportFeedback = document.getElementById("rumor-report-feedback");
+  const reportSubmit = document.getElementById("rumor-report-submit");
+  const reportCancel = document.getElementById("rumor-report-cancel");
+  const hiddenNotice = "[Entries hidden after community reports]";
+  let reportingRow = null;
+  let reporting = false;
   let rows = [];
   let categoryFilter = "All";
-  let sortKey = "updated";
+  let sortKey = "smart"; // "smart" = recommended order; otherwise a column key from sortOptions
   let sortDirection = "descending";
   let editingRow = null;
   let submitting = false;
@@ -241,6 +252,19 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
   // Same normalization as the server: whitespace runs (incl. line breaks) become one space.
   const singleLine = value => String(value ?? "").replace(/\s+/g, " ").trim();
   const rowKey = row => `${singleLine(row.institution).toLowerCase()}\u0000${row.category.toLowerCase()}`;
+  // Rows this browser already reported, so one visitor cannot stack reports on the same entry.
+  const reportedKey = "rumorMillReported:v1";
+  const readReported = () => { try { return JSON.parse(localStorage.getItem(reportedKey) || "[]"); } catch { return []; } };
+  const markReported = row => {
+    try { localStorage.setItem(reportedKey, JSON.stringify([...new Set([...readReported(), rowKey(row)])].slice(-500))); } catch { /* Not essential. */ }
+  };
+  // Same rules as the server: rumors are text about a job, not a place for contact details or links.
+  const rumorTextProblem = text => /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/i.test(text) || /(^|[\s(])@[a-z0-9_]{2,}/i.test(text) ||
+    /(https?:\/\/|www\.)\S+/i.test(text) || /\b[a-z0-9-]+\.(com|org|net|edu|gov|io|ac\.[a-z]{2}|co\.[a-z]{2})\b/i.test(text) ||
+    /(?:\+\d{1,3}[\s.-]?)?(?:\(\d{2,4}\)|\d{2,4})[\s.-]\d{3,4}[\s.-]\d{3,4}/.test(text)
+    ? "Please keep rumors free of links, email addresses, phone numbers and @handles. Put the job ad link in the Job URL field." : "";
+  // AAS Job Register ads have a stable id (aas.org/jobregister/ad/<id>); the same id is the same job.
+  const adId = url => (/^https?:\/\/(?:www\.|jobregister\.)?aas\.org\/(?:jobregister\/)?ad\/([a-z0-9]+)\/?(?:[?#].*)?$/i.exec(String(url || "").trim()) || [])[1]?.toLowerCase() || "";
   const showMessage = (element, message, state = "") => {
     element.textContent = message;
     element.dataset.state = state;
@@ -259,6 +283,29 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
   // job was first reported; sorting the raw text would order by that date anyway, but opaquely.
   const firstReported = rumors => dateOnly((/^\[(\d{4}-\d{2}-\d{2})\]/.exec(rumors) || [])[1] || "");
   const sortValue = row => sortKey === "rumors" ? firstReported(row.rumors) : row[sortKey];
+  const localDate = date => [date.getFullYear(), String(date.getMonth() + 1).padStart(2, "0"), String(date.getDate()).padStart(2, "0")].join("-");
+  const todayString = () => localDate(new Date());
+  const daysFromToday = days => { const date = new Date(); date.setDate(date.getDate() + days); return localDate(date); };
+  // Recommended order: jobs with a dated update (newest first), then upcoming deadlines (soonest
+  // first), then jobs with no deadline, then passed deadlines (most recent first).
+  const smartGroup = (row, today) => row.updated ? 0 : !row.deadline ? 2 : row.deadline >= today ? 1 : 3;
+  const compareSmart = (a, b, today) => {
+    const groupA = smartGroup(a.row, today);
+    const groupB = smartGroup(b.row, today);
+    if (groupA !== groupB) return groupA - groupB;
+    const first = groupA === 0 ? b.row.updated.localeCompare(a.row.updated)
+      : groupA === 1 ? a.row.deadline.localeCompare(b.row.deadline)
+      : groupA === 3 ? b.row.deadline.localeCompare(a.row.deadline) : 0;
+    return first || compareText(a.row.institution, b.row.institution) ||
+      compareText(a.row.category, b.row.category) || a.index - b.index;
+  };
+  const matchesDeadline = (row, filter, today) => {
+    if (!filter) return true;
+    if (filter === "none") return !row.deadline;
+    if (!row.deadline) return false;
+    if (filter === "passed") return row.deadline < today;
+    return row.deadline >= today && row.deadline <= daysFromToday(Number(filter));
+  };
   const compareRows = (a, b) => {
     const left = sortValue(a.row);
     const right = sortValue(b.row);
@@ -285,15 +332,26 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
       button.setAttribute("aria-label", `${option.label}. Sort ${option[nextDirection]}`);
       button.setAttribute("title", `Sort ${option[nextDirection]}`);
     });
+    const wanted = sortKey === "smart" ? "smart" : `${sortKey}:${sortDirection}`;
+    sortSelect.value = [...sortSelect.options].some(option => option.value === wanted) ? wanted : "custom";
+  };
+
+  // Only entries that have rumor text can be reported (nothing to report on a bare job ad).
+  const reportControl = (row, index) => {
+    if (!row.rumors || row.rumors === hiddenNotice) return "";
+    if (readReported().includes(rowKey(row))) return `<span class="rumor-muted rumor-reported">Reported</span>`;
+    return `<button type="button" class="rumor-row-report" data-rumor-report="${index}" aria-label="Report the entries for ${escapeHtml(row.institution)}">Report</button>`;
   };
 
   const renderRows = () => {
     const query = searchInput.value.trim().toLowerCase();
+    const today = todayString();
     const visibleRows = rows.map((row, index) => ({ row, index })).filter(({ row }) =>
       (categoryFilter === "All" || row.category === categoryFilter) &&
       (!statusFilter.value || row.status === statusFilter.value) &&
+      matchesDeadline(row, deadlineFilter.value, today) &&
       [row.institution, row.status, row.rumors].some(value => value.toLowerCase().includes(query))
-    ).sort(compareRows);
+    ).sort(sortKey === "smart" ? (a, b) => compareSmart(a, b, today) : compareRows);
 
     count.textContent = `${visibleRows.length} of ${rows.length} ${rows.length === 1 ? "position" : "positions"}`;
     if (!visibleRows.length) {
@@ -305,14 +363,15 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
     tableBody.innerHTML = visibleRows.map(({ row, index }) => {
       const statusClass = row.status.startsWith("Offer") ? "offer" : ["Interviews", "Shortlist / Reference Req"].includes(row.status) ? "progress" : "posted";
       const jobLink = row.jobUrl ? `<a class="rumor-job-link" href="${escapeHtml(row.jobUrl)}" target="_blank" rel="noopener noreferrer" aria-label="Open job ad for ${escapeHtml(row.institution)}"><ion-icon name="open-outline" aria-hidden="true"></ion-icon></a>` : "";
+      const passed = row.deadline && row.deadline < today ? ` <small class="rumor-muted">(passed)</small>` : "";
       return `<tr>
         <th scope="row"><div class="rumor-institution">${escapeHtml(row.institution)}${jobLink}</div></th>
-        <td>${escapeHtml(row.category)}</td>
-        <td>${row.deadline ? `<time datetime="${escapeHtml(row.deadline)}">${escapeHtml(row.deadline)}</time>` : "—"}</td>
-        <td><span class="rumor-status rumor-status-${statusClass}">${escapeHtml(row.status)}</span></td>
-        <td><div class="rumor-log">${escapeHtml(row.rumors)}</div></td>
-        <td>${row.updated ? `<time datetime="${escapeHtml(row.updated)}">${escapeHtml(row.updated)}</time>` : "—"}</td>
-        <td><button type="button" class="rumor-row-update" data-rumor-update="${index}" aria-label="Update ${escapeHtml(row.institution)}">+ Update</button></td>
+        <td class="rumor-cell-category" data-label="Category">${escapeHtml(row.category)}</td>
+        <td class="rumor-cell-deadline" data-label="Deadline">${row.deadline ? `<time datetime="${escapeHtml(row.deadline)}">${escapeHtml(row.deadline)}</time>${passed}` : `<span class="rumor-muted">None listed</span>`}</td>
+        <td class="rumor-cell-status" data-label="Status"><span class="rumor-status rumor-status-${statusClass}">${escapeHtml(row.status)}</span></td>
+        <td class="rumor-cell-log" data-label="Rumors &amp; dated log">${row.rumors ? `<div class="rumor-log">${escapeHtml(row.rumors)}</div>` : `<span class="rumor-muted">No reports yet</span>`}</td>
+        <td class="rumor-cell-updated" data-label="Last updated">${row.updated ? `<time datetime="${escapeHtml(row.updated)}">${escapeHtml(row.updated)}</time>` : `<span class="rumor-muted">No dated update</span>`}</td>
+        <td class="rumor-cell-action"><button type="button" class="rumor-row-update" data-rumor-update="${index}" aria-label="Update ${escapeHtml(row.institution)}">+ Update</button>${reportControl(row, index)}</td>
       </tr>`;
     }).join("");
   };
@@ -379,20 +438,23 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
   const ignoredWords = new Set(["the", "of", "and", "for", "in", "at", "de", "a", "an", "position", "positions"]);
   const looseName = value => String(value).normalize("NFKD").replace(/[̀-ͯ]/g, "")
     .toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
-  const findMatches = text => {
+  const findMatches = (text, url) => {
+    const id = adId(url);
+    const byAd = id ? rows.map((row, index) => ({ row, index, byAd: true })).filter(({ row }) => adId(row.jobUrl) === id) : [];
     const query = looseName(text);
     const words = query.split(" ").filter(word => word.length > 1 && !ignoredWords.has(word));
-    if (!words.length || query.length < 3) return [];
-    return rows
+    const byName = !words.length || query.length < 3 ? [] : rows
       .map((row, index) => ({ row, index, name: looseName(row.institution) }))
       .filter(({ name }) => name === query || words.every(word => name.includes(word)))
-      .sort((a, b) => (b.name === query) - (a.name === query) || a.name.length - b.name.length)
-      .slice(0, 4);
+      .sort((a, b) => (b.name === query) - (a.name === query) || a.name.length - b.name.length);
+    // The same job ad id always comes first; the server also merges these into one row.
+    return [...byAd, ...byName.filter(item => !byAd.some(ad => ad.index === item.index))].slice(0, 4);
   };
   const renderMatches = () => {
-    const matches = editingRow ? [] : findMatches(fields.institution.value);
+    const matches = editingRow ? [] : findMatches(fields.institution.value, fields.jobUrl.value);
     matchesBox.hidden = !matches.length;
-    matchesBox.innerHTML = matches.length ? `<p><strong>Already listed?</strong> Update the existing entry instead of adding a duplicate:</p>
+    const sameAd = matches.some(match => match.byAd);
+    matchesBox.innerHTML = matches.length ? `<p><strong>${sameAd ? "This job ad is already listed." : "Already listed?"}</strong> Update the existing entry instead of adding a duplicate:</p>
       <ul>${matches.map(({ row, index }) => `<li><button type="button" class="rumor-row-update" data-rumor-switch="${index}">
         + Update “${escapeHtml(row.institution)}” <span>(${escapeHtml(row.category)})</span></button></li>`).join("")}</ul>` : "";
   };
@@ -407,11 +469,15 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
     });
     fields.category.value = row ? row.category : "Postdoc";
     fields.category.disabled = Boolean(row);
-    fields.status.value = row ? row.status : "Ad Posted";
+    // Existing jobs default to "leave status unchanged", so adding a note cannot overwrite a
+    // stage that someone else changed after this page loaded.
+    keepStatusOption.disabled = keepStatusOption.hidden = !row;
+    keepStatusOption.textContent = row ? `Leave status unchanged (now: ${row.status})` : "Leave status unchanged";
+    fields.status.value = row ? "__keep__" : "Ad Posted";
     characterCount.textContent = "0 / 500";
     document.getElementById("rumor-modal-title").textContent = row ? "Update this position" : "Add a new job";
     document.getElementById("rumor-modal-description").textContent = row
-      ? "The position details are locked. Your dated update will be appended to its existing log."
+      ? "The position details are locked. Your dated update will be appended to its existing log. Change the status only if the hiring stage moved."
       : "Only for jobs that are not in the tracker yet. If it is already listed, use + Update on its row instead.";
     renderMatches();
     if (!dialog.open) dialog.showModal();
@@ -429,6 +495,14 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
     renderRows();
   }));
   statusFilter.addEventListener("change", renderRows);
+  deadlineFilter.addEventListener("change", renderRows);
+  sortSelect.addEventListener("change", () => {
+    if (sortSelect.value === "custom") return;
+    if (sortSelect.value === "smart") sortKey = "smart";
+    else [sortKey, sortDirection] = sortSelect.value.split(":");
+    updateSortHeaders();
+    renderRows();
+  });
   searchInput.addEventListener("input", renderRows);
   refreshButton.addEventListener("click", loadRows);
   sortButtons.forEach(button => button.addEventListener("click", () => {
@@ -444,6 +518,7 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
     if (button) openModal(rows[Number(button.dataset.rumorUpdate)]);
   });
   fields.institution.addEventListener("input", renderMatches);
+  fields.jobUrl.addEventListener("input", renderMatches);
   matchesBox.addEventListener("click", event => {
     const button = event.target.closest("[data-rumor-switch]");
     if (!button || submitting) return;
@@ -465,7 +540,8 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
     const payload = {
       institution: singleLine(fields.institution.value), category: fields.category.value,
       deadline: fields.deadline.value, jobUrl: fields.jobUrl.value.trim(),
-      status: fields.status.value, rumor: singleLine(fields.rumor.value), website: fields.website.value
+      status: fields.status.value === "__keep__" ? "" : fields.status.value,
+      rumor: singleLine(fields.rumor.value), website: fields.website.value
     };
     // Use the actual row identity even if a disabled/read-only form control is altered.
     if (editingRow) ["institution", "category", "deadline", "jobUrl"].forEach(name => { payload[name] = editingRow[name]; });
@@ -473,7 +549,12 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
       showMessage(formFeedback, "Enter an institution (up to 200 characters) and a rumor (up to 500 characters).", "error");
       return;
     }
-    if (!categories.includes(payload.category) || !statuses.includes(payload.status) || payload.website) {
+    const rumorProblem = rumorTextProblem(payload.rumor);
+    if (rumorProblem) {
+      showMessage(formFeedback, rumorProblem, "error");
+      return;
+    }
+    if (!categories.includes(payload.category) || !(statuses.includes(payload.status) || (editingRow && payload.status === "")) || payload.website) {
       showMessage(formFeedback, "This submission could not be accepted. Check the form and try again.", "error");
       return;
     }
@@ -506,7 +587,7 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
         savedRow = {
           institution: existing?.institution || payload.institution, category: payload.category,
           deadline: existing?.deadline || payload.deadline, jobUrl: existing?.jobUrl || payload.jobUrl,
-          status: payload.status, rumors, updated: today
+          status: payload.status || existing?.status || editingRow?.status, rumors, updated: today
         };
       } else {
         const result = await requestApi({
@@ -525,6 +606,7 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
       else rows[index] = savedRow;
       saveCachedRows();
       statusFilter.value = "";
+      deadlineFilter.value = "";
       searchInput.value = "";
       categoryButtons[0].click();
       renderRows();
@@ -537,6 +619,58 @@ const RUMOR_API_URL = "https://script.google.com/macros/s/AKfycbyGMJWhiEwtrLVhAN
       submitting = false;
       submitButton.disabled = cancelButton.disabled = refreshButton.disabled = false;
       submitButton.textContent = "Post Anonymously";
+    }
+  });
+
+  // Report an entry: anonymous, fixed reasons only, hidden automatically after three reports.
+  tableBody.addEventListener("click", event => {
+    const button = event.target.closest("[data-rumor-report]");
+    if (!button) return;
+    reportingRow = rows[Number(button.dataset.rumorReport)];
+    if (!reportingRow) return;
+    reportForm.reset();
+    showMessage(reportFeedback, "");
+    document.getElementById("rumor-report-job").textContent = `${reportingRow.institution} (${reportingRow.category})`;
+    reportDialog.showModal();
+    document.body.classList.add("rumor-modal-open");
+  });
+  reportCancel.addEventListener("click", () => { if (!reporting) reportDialog.close(); });
+  reportDialog.addEventListener("cancel", event => { if (reporting) event.preventDefault(); });
+  reportDialog.addEventListener("close", () => document.body.classList.remove("rumor-modal-open"));
+  reportForm.addEventListener("submit", async event => {
+    event.preventDefault();
+    if (reporting || !reportingRow) return;
+    const row = reportingRow;
+    reporting = true;
+    reportSubmit.disabled = reportCancel.disabled = true;
+    try {
+      let hidden = false;
+      if (demoMode) {
+        hidden = false;
+      } else {
+        const result = await requestApi({
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "report", institution: row.institution, category: row.category,
+            reason: new FormData(reportForm).get("reason"), website: new FormData(reportForm).get("website") || ""
+          })
+        });
+        if (!result || result.success !== true) throw new Error(result?.error || "The report could not be recorded.");
+        hidden = result.hidden === true;
+      }
+      markReported(row);
+      const index = rows.findIndex(item => rowKey(item) === rowKey(row));
+      if (hidden && index >= 0) rows[index] = { ...rows[index], rumors: hiddenNotice };
+      saveCachedRows();
+      renderRows();
+      reportDialog.close();
+      showMessage(feedback, "Thank you. Your anonymous report was recorded.", "success");
+    } catch (error) {
+      showMessage(reportFeedback, error.message || "The report could not be sent. Please try again later.", "error");
+    } finally {
+      reporting = false;
+      reportSubmit.disabled = reportCancel.disabled = false;
     }
   });
 

@@ -1313,7 +1313,7 @@ body.rumor-modal-open {
 
 @media (min-width: 580px) {
   .rumor-filter-bar {
-    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 0.8fr) minmax(0, 1.2fr);
   }
 
   .rumor-form-row {
@@ -1835,4 +1835,148 @@ body.rumor-modal-open {
 
 .rumor-matches .rumor-row-update span {
   color: var(--light-gray-70);
+}
+
+/*-----------------------------------*\
+  #RUMOR MILL — muted text, phone cards
+\*-----------------------------------*/
+
+.rumor-muted {
+  color: var(--light-gray-70);
+  font-size: 11px;
+}
+
+.rumor-sort-field {
+  display: none;
+}
+
+/* Phones and small tablets: each job becomes a compact card instead of a wide table. */
+@media (max-width: 719px) {
+  .rumor-desktop-only {
+    display: none;
+  }
+
+  .rumor-sort-field {
+    display: grid;
+  }
+
+  .rumor-table-container {
+    border: 0;
+    overflow: visible;
+  }
+
+  .rumor-table,
+  .rumor-table tbody {
+    display: block;
+    min-width: 0;
+  }
+
+  .rumor-table thead {
+    display: none;
+  }
+
+  .rumor-table tbody tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px 12px;
+    align-items: center;
+    padding: 14px;
+    margin-bottom: 10px;
+    border: 1px solid var(--jet);
+    border-radius: 12px;
+  }
+
+  .rumor-table tbody th,
+  .rumor-table tbody td {
+    display: block;
+    padding: 0;
+    border: 0;
+  }
+
+  .rumor-table tbody th {
+    grid-column: 1 / -1;
+  }
+
+  .rumor-cell-category { grid-area: 2 / 1; }
+  .rumor-cell-deadline { grid-area: 2 / 2; text-align: right; }
+  .rumor-cell-status { grid-area: 3 / 1; }
+  .rumor-cell-action { grid-area: 3 / 2; text-align: right; }
+  .rumor-cell-log { grid-area: 4 / 1 / 5 / -1; }
+  .rumor-cell-updated { grid-area: 5 / 1 / 6 / -1; }
+
+  /* The global rule makes time/span block-level; keep label and value on one line. */
+  .rumor-cell-deadline time,
+  .rumor-cell-deadline small,
+  .rumor-cell-deadline span,
+  .rumor-cell-updated time,
+  .rumor-cell-updated span {
+    display: inline;
+  }
+
+  .rumor-cell-deadline::before,
+  .rumor-cell-updated::before {
+    display: inline;
+    content: attr(data-label) ": ";
+    color: var(--light-gray-70);
+    font-size: 11px;
+  }
+
+  .rumor-cell-log {
+    padding-top: 8px;
+    border-top: 1px solid var(--jet);
+  }
+
+  .rumor-row-update {
+    min-height: 40px;
+    padding: 8px 14px;
+    border: 1px solid var(--jet);
+    border-radius: 8px;
+  }
+
+  .rumor-table .rumor-empty {
+    display: block;
+  }
+
+  .rumor-table tbody tr:has(.rumor-empty) {
+    display: block;
+  }
+}
+
+.rumor-row-report {
+  display: block;
+  margin-top: 4px;
+  padding: 2px 9px;
+  font-size: 11px;
+  color: var(--light-gray-70);
+}
+
+.rumor-row-report:hover {
+  color: var(--orange-yellow-crayola);
+  text-decoration: underline;
+}
+
+.rumor-reported {
+  display: block;
+  margin-top: 4px;
+  padding: 2px 9px;
+}
+
+.rumor-report-reasons {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0 6px;
+  border: 0;
+  color: var(--light-gray);
+  font-size: 13px;
+}
+
+.rumor-report-reasons label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.rumor-report-reasons input {
+  width: auto;
+  accent-color: var(--orange-yellow-crayola);
 }

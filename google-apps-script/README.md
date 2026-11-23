@@ -18,8 +18,10 @@ The site works immediately with four fictional demo entries while `RUMOR_API_URL
    const RUMOR_API_URL = "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec";
    ```
 
-6. Open the `/exec` URL in a signed-out/private browser window. A new tracker should return `[]`, without a login prompt. Preview the site (for example, `python3 -m http.server 8000` in the repository), visit `http://localhost:8000/#rumor-mill`, and post a test job. Verify a second update appends a dated line to the same sheet row. Remove test rows directly in Sheets, then refresh the site.
-7. Commit and push the site changes to GitHub. Share **https://yuchialin.com/#rumor-mill** once GitHub Pages finishes publishing.
+6. Open the `/exec` URL in a signed-out/private browser window. A new tracker should return `[]`, without a login prompt. Preview the site (for example, `python3 -m http.server 8000` in the repository), visit `http://localhost:8000/rumor-mill` (for example with a tiny static server that maps `/rumor-mill` to `rumor-mill.html`), and post a test job. Verify a second update appends a dated line to the same sheet row. Remove test rows directly in Sheets, then refresh the site.
+7. Commit and push the site changes to GitHub. Share **https://yuchialin.com/rumor-mill** once GitHub Pages finishes publishing.
+
+**Deploy order matters when `Code.gs` and the site change together:** redeploy `Code.gs` first, then push the site. The new server accepts everything the old site sends, but the new site sends an empty status ("leave unchanged") and report requests that an old server rejects.
 
 If you change `Code.gs` later, use **Deploy → Manage deployments → Edit → Version: New version → Deploy** to keep the same URL. Re-run `setupRumorMill` if you move the script to another spreadsheet. If **Anyone** is unavailable, your Workspace administrator may restrict anonymous web apps; use an account that permits that access.
 
@@ -31,6 +33,19 @@ If you change `Code.gs` later, use **Deploy → Manage deployments → Edit → 
 - Institution (max 200 characters) + category match case-insensitively after trimming. An update preserves existing job details, fills an empty deadline/URL, updates status, and appends `[YYYY-MM-DD] ...` to the history. Rumors are required and limited to 500 characters; URLs to 2,048. Categories/statuses are validated, only HTTP(S) job URLs are accepted, and formula-like text is stored literally. A script lock serializes writes. A 45,000-character history limit rejects further updates without deleting previous entries.
 - `GET` responses are cached in Apps Script's `CacheService` (gzip-compressed, up to 5 minutes) so most loads skip opening the spreadsheet. Every successful `POST` clears the cache, and so do manual edits in the sheet through the `onEdit` simple trigger. Changes that skip `onEdit` (such as **File → Import**) appear within 5 minutes. The site also keeps the last loaded list in each visitor's browser and shows it instantly while fresh data loads.
 
+## Reports, hiding and the Log (no review needed)
+
+The script maintains two optional columns and one extra tab by itself; nothing needs to be reviewed or approved:
+
+- **Columns H `Reports` and I `Hidden`.** The script writes these headers the first time it runs (`setupRumorMill` or the first submission). If H1/I1 already contain something else, it leaves them alone and reporting is switched off.
+- **Report button.** Visitors can report an entry (reasons: names or personal information; abusive or should be removed). Reports carry no free text. When a job gets enough reports (the threshold is `RUMOR_REPORT_THRESHOLD` in `Code.gs`), `Hidden` becomes `TRUE` and visitors see "[Entries hidden after community reports]" instead of its rumor text. The text stays in the sheet. To restore it, set `Hidden` to `FALSE` (and `Reports` to 0); you are never required to.
+- **`Log` tab** (created automatically, always after the tracker tab). One row per update, new job or report with time, job, status before/after and the report reason. It never contains rumor text.
+- **Automatic rules for everyone.** Rumors cannot contain links, email addresses, phone numbers or @handles (put the ad link in the Job URL field). Limits: 30 updates per minute overall, 15 updates per job per hour, 6 reports per hour overall and 3 reports per job per hour. These use the script cache, so they reset by themselves.
+- **Same ad, one row.** A submission whose job URL is an AAS Job Register ad (`aas.org/jobregister/ad/<id>`) already in the sheet is merged into that row even if the name differs.
+- **Notes don't change the stage.** Updating an existing job with an empty status keeps its current stage; only choosing a status changes it.
+
+Residual risk: reports are anonymous, so someone could script reports to hide entries. The overall limit (6 reports per hour) caps this, and the hidden text is never deleted.
+
 ## Running the community tracker
 
-The spreadsheet can stay private; the deployed API exposes all seven tracker columns and allows anonymous submissions. Do not store private data in them. No sign-in or contributor name is collected by this code; Google still handles requests under its own policies. The honeypot stops basic bots, not determined spam. Review reports in Sheets, remove abusive content there, and avoid posting applicant names or personal details. Use a dedicated tracker sheet; keep backups before manual moderation. Apps Script quotas can limit traffic, and anonymous reports remain unverified.
+The spreadsheet can stay private; the deployed API exposes all seven tracker columns and allows anonymous submissions. Do not store private data in them. No sign-in or contributor name is collected by this code; Google still handles requests under its own policies. The honeypot stops basic bots, not determined spam. Hiding is automatic (see above); you may still delete or edit rows in Sheets at any time, but nothing requires it. Avoid posting applicant names or personal details. Use a dedicated tracker sheet; keep backups before manual moderation. Apps Script quotas can limit traffic, and anonymous reports remain unverified.

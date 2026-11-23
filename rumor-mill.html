@@ -94,6 +94,8 @@
           <p>An anonymous, community-run tracker for the 2026–2027 Astronomy &amp; Astrophysics job market. Anonymous
             rumors are unverified; check official job ads for details.
             Please protect your mental health, take breaks, and avoid sharing applicants’ names or personal information.
+            Rumors are submitted by visitors and are not reviewed, verified or endorsed by the site owner. Use
+            <strong>Report</strong> on any entry that contains a name or personal information.
           </p>
         </aside>
 
@@ -123,6 +125,27 @@
                 <option>Offer Accepted</option>
               </select>
             </label>
+            <label class="rumor-field rumor-deadline-field" for="rumor-deadline-filter">
+              <span>Deadline</span>
+              <select id="rumor-deadline-filter">
+                <option value="">All deadlines</option>
+                <option value="7">Next 7 days</option>
+                <option value="30">Next 30 days</option>
+                <option value="passed">Already passed</option>
+                <option value="none">No deadline listed</option>
+              </select>
+            </label>
+            <label class="rumor-field rumor-sort-field" for="rumor-sort-select">
+              <span>Sort by</span>
+              <select id="rumor-sort-select">
+                <option value="smart">Recommended</option>
+                <option value="deadline:ascending">Deadline, soonest first</option>
+                <option value="updated:descending">Recently updated</option>
+                <option value="institution:ascending">Institution A to Z</option>
+                <option value="status:descending">Furthest hiring stage first</option>
+                <option value="custom" hidden disabled>Custom (table headings)</option>
+              </select>
+            </label>
             <label class="rumor-field rumor-search-field" for="rumor-search">
               <span>Search the mill</span>
               <input type="search" id="rumor-search" placeholder="Institution, fellowship, status, or rumor…"
@@ -148,8 +171,8 @@
         </section>
 
         <p id="rumor-feedback" class="rumor-feedback" role="status" aria-live="polite"></p>
-        <p id="rumor-table-help" class="rumor-table-help">Click a column heading to sort; click again to reverse.
-          Scroll the table horizontally to see all columns.</p>
+        <p id="rumor-table-help" class="rumor-table-help"><span class="rumor-desktop-only">Click a column heading to sort; click again to reverse.
+          Scroll the table horizontally to see all columns. </span>The default order shows jobs with dated updates first, then the soonest deadlines.</p>
         <div class="rumor-table-container has-scrollbar" role="region" aria-label="Astronomy job rumors"
           aria-describedby="rumor-table-help" tabindex="0">
           <table class="rumor-table">
@@ -161,8 +184,8 @@
                 <th scope="col"><button type="button" class="rumor-sort-button" data-rumor-sort="deadline">Deadline ↕</button></th>
                 <th scope="col"><button type="button" class="rumor-sort-button" data-rumor-sort="status">Current Status ↕</button></th>
                 <th scope="col"><button type="button" class="rumor-sort-button" data-rumor-sort="rumors">Rumors &amp; Dated Log ↕</button></th>
-                <th scope="col" id="rumor-updated-heading" aria-sort="descending">
-                  <button type="button" id="rumor-sort-updated" class="rumor-sort-button" data-rumor-sort="updated">Last Updated ↓</button>
+                <th scope="col" id="rumor-updated-heading">
+                  <button type="button" id="rumor-sort-updated" class="rumor-sort-button" data-rumor-sort="updated">Last Updated ↕</button>
                 </th>
                 <th scope="col">Action</th>
               </tr>
@@ -223,6 +246,7 @@
       <label class="rumor-field" for="rumor-status">
         <span>Current status *</span>
         <select id="rumor-status" name="status" required>
+          <option id="rumor-status-keep" value="__keep__" hidden disabled>Leave status unchanged</option>
           <option>Ad Posted</option>
           <option>Shortlist / Reference Req</option>
           <option>Interviews</option>
@@ -247,6 +271,31 @@
       <div class="rumor-form-actions">
         <button id="rumor-cancel" type="button" class="rumor-button">Cancel</button>
         <button id="rumor-submit" type="submit" class="rumor-button rumor-button-primary">Post Anonymously</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="rumor-report-dialog" class="rumor-dialog" aria-labelledby="rumor-report-title">
+    <form id="rumor-report-form" class="rumor-form">
+      <header>
+        <p class="rumor-eyebrow">Report an entry</p>
+        <h2 id="rumor-report-title">Report this entry</h2>
+        <p id="rumor-report-job"></p>
+      </header>
+      <fieldset class="rumor-report-reasons">
+        <legend class="rumor-sr-only">Reason</legend>
+        <label><input type="radio" name="reason" value="names" checked> Contains a name or personal information</label>
+        <label><input type="radio" name="reason" value="remove"> Abusive, false, or should be removed</label>
+      </fieldset>
+      <p class="rumor-table-help">Reports are anonymous and need no explanation.</p>
+      <div class="rumor-honeypot" aria-hidden="true" inert>
+        <label for="rumor-report-website">Leave this field blank</label>
+        <input id="rumor-report-website" name="website" type="text" tabindex="-1" autocomplete="off">
+      </div>
+      <p id="rumor-report-feedback" class="rumor-feedback" role="alert"></p>
+      <div class="rumor-form-actions">
+        <button id="rumor-report-cancel" type="button" class="rumor-button">Cancel</button>
+        <button id="rumor-report-submit" type="submit" class="rumor-button rumor-button-primary">Send report</button>
       </div>
     </form>
   </dialog>
