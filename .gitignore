@@ -23,3 +23,6 @@ __pycache__/
 !.env.example
 .clasprc.json
 .clasp.json
+
+# Apps Script source is kept private
+google-apps-script/Code.gs
